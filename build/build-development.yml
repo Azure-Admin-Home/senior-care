@@ -1,4 +1,4 @@
-name: $(date:yyyyMMdd)_v$(Major).$(Minor)_test
+name: $(date:yyyyMMdd)_v$(Major).$(Minor)_Build
 
 stages:
 - stage: Build
