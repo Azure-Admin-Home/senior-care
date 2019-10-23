@@ -1,0 +1,60 @@
+name: $(date:yyyyMMdd)_v$(Major).$(Minor)_test
+
+stages:
+- stage: Build
+  displayName: Build
+
+  jobs:
+  - job: Deploy_and_Test
+    displayName: Deploy and Test
+
+    pool:
+      name: Self Ubuntu 1604
+      demands:
+      - sfdx
+      - ant
+
+    steps:
+    - script: |
+        echo cd $(System.DefaultWorkingDirectory)
+        cd $(System.DefaultWorkingDirectory)
+        
+        echo mkdir $(build.path)
+        mkdir $(build.path)
+        
+        echo mv * $(build.path)
+        mv * $(build.path)
+        
+        echo wget -O $(build.path)/build-DX.zip "$(build.url)"
+        wget -O $(build.path)/build-DX.zip "$(build.url)"
+        
+        echo unzip -o $(build.path)/build-DX.zip -d $(build.path)
+        unzip -o $(build.path)/build-DX.zip -d $(build.path)
+      displayName: 'Prepare Build Files'
+
+    - script: |
+        echo cd $(build.path)
+        cd $(build.path)
+        
+        echo sfdx force:source:convert -r src -d .package
+        sfdx force:source:convert -r src -d .package
+      displayName: 'SFDX Convert'
+
+    - task: Ant@1
+      displayName: 'Ant Build'
+      inputs:
+        buildFile: '$(build.path)/build.xml'
+        options: '-Dsf.checkonly=$(sf.checkonly) -Dsf.target.url=$(sf.target.url) -Dsf.target.username=$(sf.target.username) -Dsf.target.password=$(sf.target.password) -Dsf.testlevel=$(sf.testlevel) -Dsf.maxpoll=$(sf.maxpoll) -Dtest.path=$(test.path) -Dtest.regex=$(test.regex) -Dsource.path=$(source.path) -Dbuild.path=$(build.path)'
+        targets: '$(ant.targets)'
+        testResultsFiles: '$(build.path)/test-report-xml/*.xml'
+        testRunTitle: 'Unit Tests'
+
+    - bash:
+        echo cd $(build.path)
+        cd $(build.path)
+
+        cd ..
+        
+        echo rm -rf $(build.path)
+        rm -rf $(build.path)
+      displayName: 'Clear Cache'
