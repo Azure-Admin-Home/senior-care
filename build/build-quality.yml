@@ -1,4 +1,4 @@
-name: $(date:yyyyMMdd)_v$(Major).$(Minor).$(Patch)_test_test
+name: $(date:yyyyMMdd)_v$(Major).$(Minor).$(Patch)_test2
 
 stages:
 - stage: Build
