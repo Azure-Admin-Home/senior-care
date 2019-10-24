@@ -19,8 +19,6 @@ public static void execute()
 			if (lastDialAttempt.date() < System.today())
 			{
 				nextDialAttempt = DateTime.newInstance(System.today(), lead.First_Dial_Time__c);
-				Group hopper = GroupUtils.getGroup('Hopper');
-				if (lead.OwnerId == hopper.Id) lead.OwnerId = GroupUtils.getGroup('Unassigned').Id;
 			}
 			else
 			{
