@@ -1,0 +1,146 @@
+name: $(date:yyyyMMdd)_v$(Major).$(Minor).$(Patch)_test2
+
+stages:
+- stage: Build
+  displayName: Build
+
+  jobs:
+  - job: Deploy_and_Test
+    displayName: Deploy and Test
+
+    pool:
+      name: Self Ubuntu 1604
+      demands:
+      - sfdx
+      - ant
+
+    steps:
+    - script: |
+        echo cd $(System.DefaultWorkingDirectory)
+        cd $(System.DefaultWorkingDirectory)
+        
+        echo mkdir $(build.path)
+        mkdir $(build.path)
+        
+        echo mv * $(build.path)
+        mv * $(build.path)
+        
+        echo wget -O $(build.path)/build-DX.zip "$(build.url)"
+        wget -O $(build.path)/build-DX.zip "$(build.url)"
+        
+        echo unzip -o $(build.path)/build-DX.zip -d $(build.path)
+        unzip -o $(build.path)/build-DX.zip -d $(build.path)
+      displayName: 'Prepare Build Files'
+
+    - script: |
+        echo cd $(build.path)
+        cd $(build.path)
+        
+        echo sfdx force:source:convert -r src -d .package
+        sfdx force:source:convert -r src -d .package
+      displayName: 'SFDX Convert'
+
+    - task: Ant@1
+      displayName: 'Ant Build'
+      inputs:
+        buildFile: '$(build.path)/build.xml'
+        options: '-Dsf.checkonly=$(sf.checkonly) -Dsf.target.url=$(sf.target.url) -Dsf.target.username=$(sf.target.username) -Dsf.target.password=$(sf.target.password) -Dsf.testlevel=$(sf.testlevel) -Dsf.maxpoll=$(sf.maxpoll) -Dtest.path=$(test.path) -Dtest.regex=$(test.regex) -Dsource.path=$(source.path) -Dbuild.path=$(build.path)'
+        targets: '$(ant.targets)'
+        testResultsFiles: '$(build.path)/test-report-xml/*.xml'
+        testRunTitle: 'Unit Tests'
+
+    - bash: |
+        echo cd $(build.path)
+        cd $(build.path)
+
+        cd ..
+        
+        echo rm -rf $(build.path)
+        rm -rf $(build.path)
+      displayName: 'Clear Cache'
+
+- stage: Git
+  displayName: Git
+
+  jobs:
+  - job: Push_to_Quality
+    displayName: Push to Quality
+
+    pool:
+      name: Self Ubuntu 1604
+      demands:
+      - sfdx
+      - ant
+
+    steps:
+    - bash: |
+        echo cd $(System.DefaultWorkingDirectory)
+        cd $(System.DefaultWorkingDirectory)
+
+        echo rm -rf $(build.path)
+        rm -rf $(build.path)
+
+        echo mkdir $(build.path)
+        mkdir $(build.path)
+
+        echo cd $(build.path)
+        cd $(build.path)
+
+        echo git config --global user.name "$(git.user.name)"
+        git config --global user.name "$(git.user.name)"
+
+        echo git config --global user.email "$(git.user.email)"
+        git config --global user.email "$(git.user.email)"
+
+        echo git init
+        git init
+
+        GIT_URL=https://$(git.login):$(git.token)@$(git.link)
+        echo git remote add origin ${GIT_URL}
+        git remote add origin ${GIT_URL}
+
+        echo git fetch --all
+        git fetch --all
+
+        echo git checkout quality
+        git checkout quality
+
+        echo git pull
+        git pull
+
+        echo git merge origin/development
+        git merge origin/development
+
+        echo git push
+        git push
+      displayName: Git Push
+
+- stage: Artifact
+  displayName: Artifact
+
+  jobs:
+  - job: Publish
+    displayName: Publish
+
+    pool:
+      name: Self Ubuntu 1604
+      demands:
+      - sfdx
+      - ant
+
+    steps:
+    - task: PublishBuildArtifacts@1
+      displayName: 'Artifact'
+      inputs:
+        PathtoPublish: '$(System.DefaultWorkingDirectory)'
+        ArtifactName: 'v$(Major).$(Minor).$(Patch)'
+
+    - bash: |
+        echo cd $(System.DefaultWorkingDirectory)
+        cd $(System.DefaultWorkingDirectory)
+
+        cd ..
+        
+        echo rm -rf $(System.DefaultWorkingDirectory)
+        rm -rf $(System.DefaultWorkingDirectory)
+      displayName: 'Clear Cache'
