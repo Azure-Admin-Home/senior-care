@@ -39,7 +39,7 @@ Mind the values in between, eg. `[EXAMPLE]`
 - `SETUP`
 - `TASK`
 - `TOOLS`
-- `RETURNS`
+<!-- - `RETURNS` -->
 <!-- - `BLOG` -->
 <!-- - `JOBS` -->
 <!-- - `MYACCOUNT` -->
