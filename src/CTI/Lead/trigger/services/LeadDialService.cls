@@ -5,16 +5,16 @@ public static void execute()
 	Map<String,List<Task>> taskMap = new Map<String,List<Task>>();
 	if (Trigger.newMap != null)
 	{
-		List<Task> tasks = [SELECT Id FROM Task WHERE WhatId IN :Trigger.newMap.keySet() AND TaskSubtype = 'Call' AND CreatedDate = TODAY];
+		List<Task> tasks = [SELECT Id FROM Task WHERE WhoId IN :Trigger.newMap.keySet() AND TaskSubtype = 'Call' AND CreatedDate = TODAY];
 		for (Task task :tasks)
 		{
-			if (!taskMap.containsKey(task.WhatId))
+			if (!taskMap.containsKey(task.WhoId))
 			{
-				taskMap.put(task.WhatId,new List<Task>{task});
+				taskMap.put(task.WhoId,new List<Task>{task});
 			}
 			else
 			{
-				taskMap.get(task.WhatId).add(task);
+				taskMap.get(task.WhoId).add(task);
 			}
 		}
 	}

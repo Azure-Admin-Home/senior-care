@@ -24,7 +24,7 @@ static void test_method_logs()
 	Lead lead = new Lead(LastName = 'Test', Status = 'New', State = 'AL');
     insert lead;
 
-	Task task = new Task(WhatId = lead.Id, TaskSubtype = 'Call');
+	Task task = new Task(WhoId = lead.Id, TaskSubtype = 'Call');
 	insert task;
 
 	update lead;
