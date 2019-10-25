@@ -18,11 +18,11 @@ public static void execute()
 		{
 			if (lastDialAttempt.date() < System.today())
 			{
-				nextDialAttempt = DateTime.newInstance(System.today(), lead.First_Dial_Time__c);
+				nextDialAttempt = DateTime.newInstance(System.today(), lead.First_Dial_Time__c).addMinutes(5);
 			}
 			else
 			{
-				DateTime startDate = DateTime.newInstance(System.today(), lead.First_Dial_Time__c);
+				DateTime startDate = DateTime.newInstance(System.today(), lead.First_Dial_Time__c).addMinutes(5);
 				DateTime nextTime = lastDialAttempt.addHours(Integer.valueOf(lead.Daily_Call_Rest_Time__c));
 				nextDialAttempt = nextTime > startDate ? nextTime : startDate;
 			}
