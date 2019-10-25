@@ -36,10 +36,10 @@ Mind the values in between, eg. `[EXAMPLE]`
 - `FRONTEND` or `FE`
 - `HOTFIX` or `FIX`
 - `RELEASE`
-- `RETURNS`
 - `SETUP`
 - `TASK`
 - `TOOLS`
+<!-- - `RETURNS` -->
 <!-- - `BLOG` -->
 <!-- - `JOBS` -->
 <!-- - `MYACCOUNT` -->
