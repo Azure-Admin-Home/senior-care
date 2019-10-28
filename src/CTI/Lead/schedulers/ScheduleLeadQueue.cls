@@ -4,12 +4,12 @@ global class ScheduleLeadQueue implements Database.Batchable<sObject>, Schedulab
 // Batch variables
 String query;
 DateTime rangeMin = System.now().addMinutes(-5);
-DateTime rangeMax = System.now().addMinutes(10);
+DateTime rangeMax = System.now().addMinutes(5);
 
 // Schedule variables
 static String scheduleName = 'ScheduleLeadQueue_v1.0';
-static String cronExp = '0 5,15,25,35,45,55 * ? * * *';
-static Integer delayMinutes = 10;
+static String cronExp = '0 5,10,15,20,25,30,35,40,45,55 * ? * * *';
+static Integer delayMinutes = 5;
 
 global ScheduleLeadQueue()
 {
@@ -29,7 +29,7 @@ global static void initJob()
 	abortJob();
 
 	// Schedule new jobs
-	for (Integer i=5; i < 60; i+=delayMinutes)
+	for (Integer i=0; i < 60; i+=delayMinutes)
 	{
 		cronExp = '0 '+i+' * ? * * *';
 		System.schedule(scheduleName+'job'+i, cronExp, new ScheduleLeadQueue());
