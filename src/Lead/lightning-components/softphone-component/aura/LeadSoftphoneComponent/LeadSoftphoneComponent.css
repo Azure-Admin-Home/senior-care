@@ -1,0 +1,95 @@
+.THIS .bottomBorder{
+    border-bottom: 2px solid rgb(221, 219, 218) !important;
+    padding-bottom : 10px !important;
+}
+.THIS .emptyBox{
+    height : 150px !important;
+   	width : 100% !important;
+}
+.THIS .slds-spinner_container{
+    margin-top:10% !important;
+}
+.THIS .fieldLabel{
+    border-bottom: 1px solid rgb(217, 219, 221)!important;
+	overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    display: inline-block !important;
+    font-size: .8125rem !important;
+    font-weight: 400 !important;
+    color: rgb(8, 7, 7) !important;
+	font-family: 'Salesforce Sans',Arial,sans-serif !important;
+}
+.THIS li.Online > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextSuccessInverse,rgb(75, 202, 129));
+}
+.THIS li.Break > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS li.Offline > a > lightning-primitive-icon > svg > use{
+    fill : white !important;
+    stroke: rgb(176, 173, 171);
+    stroke-width: 2px;
+}
+.THIS li.Wrap_Up > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+                        .THIS li.Break_15_minutes > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS li.Lunch > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS li.Manual_Dialing > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS li.Off_phones_meetinng > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS li.Off_phones_training > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS li.Online_Waiting_for_Inbound_Call > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextSuccessInverse,rgb(75, 202, 129));
+}
+.THIS li.Waiting_for_Call > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS lightning-icon.Online lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextSuccessInverse,rgb(75, 202, 129));
+}
+.THIS lightning-icon.Break_15_minutes lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS lightning-icon.Lunch lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS lightning-icon.Manual_Dialing lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS lightning-icon.Off_phones_meetinng  lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS lightning-icon.Off_phones_training  lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS lightning-icon.Online_Waiting_for_Inbound_Call lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextSuccessInverse,rgb(75, 202, 129));
+}
+.THIS lightning-icon.Waiting_for_Call lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS lightning-icon.Break  lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
+.THIS lightning-icon.Offline lightning-primitive-icon > svg > use{
+    fill : white !important;
+    stroke: rgb(176, 173, 171);
+    stroke-width: 2px;
+}
+.THIS .slds-utility-panel__header{
+    z-index: -1 !important;
+}                                                                                                                                                        
+.THIS lightning-icon.Wrap_Up > a > lightning-primitive-icon > svg > use{
+    fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
+}
