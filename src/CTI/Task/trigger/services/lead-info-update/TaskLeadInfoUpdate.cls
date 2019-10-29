@@ -22,7 +22,9 @@ public class TaskLeadInfoUpdate {
                                   FROM Lead WHERE Id IN :leadIds];
         for(Lead lead : leadRecords){
            System.debug('CHECK lead Name: ' + lead);
-           Set<Id> taskIds = leadToTasks.get(lead.Id);
+           Id leadId = lead.Id;
+		   lead.All_Log_Call_Activities__c = [SELECT COUNT() FROM Task WHERE WhoId = :leadId AND TaskSubtype = 'Call'];
+           Set<Id> taskIds = leadToTasks.get(leadId);
            for(Id taskId : taskIds){
                Task realtedTask = newTasks.get(taskId);
                lead.Disposition__c = realtedTask.Subject;
