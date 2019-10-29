@@ -145,6 +145,8 @@
         }else if(selectedMenuItemValue ===  'Online – Inbound Only'){
             helper.handleMiniDialerVisibility(component,event,false);
             component.set("v.incomingOnlyFlag",true);
+            component.set("v.enrollmentOnFlag", false);
+            component.set("v.enrollmentCallFlag", false);
             if(onlineFLag)
             {
                 helper.logOutFromQsuite(component,event,authKey);
@@ -196,10 +198,15 @@
         }else if (selectedMenuItemValue === 'Inbound - Enrollment / Receive Transfer') {
             let inboundOn = false;
             console.log("CHECK in Inbound - Enrollment item");
-            component.set("v.onlineFLag", true);
+            component.set("v.onlineFLag", false);
+            component.set("v.isLeadFlag",false);
             console.log("CHECK onlineFlag: " + component.get("v.onlineFLag"));
-            component.set("v.incomingOnlyFlag", false);
-            component.set("v.enrollmentOnFlag", true);
+            helper.logOutFromQsuite(component,event,authKey);
+            helper.loginToQsuite(component, event, omniAPI, inboundOn, () => {
+               component.set("v.onlineFLag", true);
+               component.set("v.incomingOnlyFlag", false);
+               component.set("v.enrollmentOnFlag", true); 
+            });
             var statusString = $A.get("$Label.c.Status_Json");
             var statusList = JSON.parse(statusString);
             statusList.forEach(function (status) {
@@ -208,16 +215,15 @@
                     omniAPI.setServicePresenceStatus({ statusId: status.Id }).then(function (result) {
                         this.addClassToStatusIcon(component, event, selectedMenuItemValue);
                     }).catch(function (error) {
-                        console.log(error);
+                        console.log("ERROR in Inbound - Enrollment: ", error);
                     });
                 }
             });
-            const authKey = component.get("v.authKey");
-            const isAlreadyAuth = ((authKey !== null)||(authkey !== undefined));
-            if(isAlreadyAuth){
-                helper.logOutFromQsuite(component,event,authKey);
-            }
-            helper.loginToQsuite(component, event, omniAPI, inboundOn);
+            //const authKey = component.get("v.authKey");
+            //const isAlreadyAuth = ((authKey !== null)||(authkey !== undefined));
+            //if(isAlreadyAuth){
+            //    helper.logOutFromQsuite(component,event,authKey);
+            //}
             //console.log("CHECK enrollment flag: " + component.get("v.enrollmentOnFlag"));
         }else{
             component.set("v.onlineFLag",false);
@@ -300,7 +306,7 @@
         });
     },
     handleDispostionChange : function(component, event, helper) {
-        var selectedValue = event.getSource().get("v.value");
+       var selectedValue = event.getSource().get("v.value");
         component.set("v.dispositionDupValue",selectedValue);
         component.set("v.dispositionFlag",false);
         var endCallFlag = component.get("v.endCallFlag");

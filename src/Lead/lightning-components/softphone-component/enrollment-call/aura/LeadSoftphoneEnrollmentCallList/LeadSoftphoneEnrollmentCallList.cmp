@@ -6,6 +6,12 @@
     <aura:handler name="init" value="{!this}" action="{!c.init}" />
     <aura:registerEvent name="callToLead" type="c:LeadSoftphoneCallToLead" />
 
+    <div style="margin-right: 20px;">
+        Refresh the list of calls:
+        <span>
+            <lightning:buttonIcon iconName="utility:refresh" variant="bare" onclick="{! c.updateCallsQueue }" alternativeText="Update calls queue" />
+        </span>
+    </div>
     <aura:if isTrue="{!empty(v.calls)}">
         <div style="text-align: center; width:100%">
             There are no calls in the queue yet

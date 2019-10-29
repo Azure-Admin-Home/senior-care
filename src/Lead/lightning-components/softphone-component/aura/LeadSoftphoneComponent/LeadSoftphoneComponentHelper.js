@@ -309,9 +309,10 @@
                                     if(status.MasterLabel === 'Online'){
                                         omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
                                             try{
+                                                console.log('CHECK result: ', result);
                                             	self.addClassToStatusIcon(component,event,'Online');
                                             } catch(err){
-                                                console.error(err);
+                                                console.error('CHECK ERROR: ', err);
                                             }
                                         }).catch(function(error) {
                                             console.log(error);
