@@ -148,6 +148,7 @@
                     component.set("v.endCallFlag",true);
                     console.log('Calling is terminated sucessful.');
                     this.getCallDataAPI(component,event,authKey);
+                    this.nextCallButtonValidation(component);
                 }else{
                     console.log('Calling is termination failed.');
                 }
@@ -1191,5 +1192,16 @@
         .catch(function(error) {
             console.log(error);
         });
+    },
+    nextCallButtonValidation : function(component) {
+        const disposition = component.get("v.dispositionValue");
+        const endCallFlag = component.get("v.endCallFlag");
+        const isCallNotEnded = (endCallFlag === false);
+        const isDispUndefined = (disposition === undefined);
+        const isDispEmpty = (disposition === "");
+        const isDispNull = (disposition === null);
+        const isDispositionNotSelected = isDispEmpty || isDispNull || isDispUndefined;
+        const disableNextCall = (isDispositionNotSelected || isCallNotEnded);
+        component.set("v.nextCallFlag", disableNextCall);
     }
 })

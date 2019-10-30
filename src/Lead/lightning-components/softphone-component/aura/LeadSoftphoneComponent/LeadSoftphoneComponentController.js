@@ -48,9 +48,8 @@
     handleEndCall : function(component,event,helper)
     {
         var authKey = component.get("v.authKey");
-        var dispositionFlag = component.get("v.dispositionFlag");
         component.set("v.endCallFlag",false);
-        component.set("v.nextCallFlag",false);
+        component.set("v.nextCallFlag",true);
         component.set("v.getCallDataResponse","");
         helper.terminateQsuiteCall(component,event,authKey);
     },
@@ -309,11 +308,9 @@
        var selectedValue = event.getSource().get("v.value");
         component.set("v.dispositionDupValue",selectedValue);
         component.set("v.dispositionFlag",false);
-        var endCallFlag = component.get("v.endCallFlag");
-        var nextCallFlag = component.get("v.nextCallFlag");
         if(selectedValue)
         {
-            component.set("v.nextCallFlag",false);
+            helper.nextCallButtonValidation(component);
         }
     },
     
