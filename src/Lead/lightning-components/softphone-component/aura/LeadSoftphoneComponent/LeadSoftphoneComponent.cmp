@@ -1,0 +1,288 @@
+<aura:component controller="LeadSoftphoneComponent_ctl" implements="force:lightningQuickActionWithoutHeader,force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome" access="global">
+    <aura:attribute name="selectedStatus" type="String" default="Offline"/>
+    <aura:attribute name="ErrorMsg" type="String" default=""/>
+    <aura:attribute name="agentNumber" type="String" default=""/>
+    <aura:attribute name="error" type="Boolean" default="false" />
+    <aura:attribute name="dispositionFlag" type="Boolean" default="true" />
+    <aura:attribute name="leadphoneOnlineFlag" type="Boolean" default="false" />
+    <aura:attribute name="omniOnlineFlag" type="Boolean" default="false" />
+    <aura:attribute name="endCallFlag" type="Boolean" default="true" />
+    <aura:attribute name="holdFlag" type="Boolean" default="false" />
+    <aura:attribute name="nextCallFlag" type="Boolean" default="true" />
+    <aura:attribute name="selectedStatusClass" type="String" default="Offline"/>
+    <aura:attribute name="authKey" type="String" default=""/>
+    <aura:attribute name="lead" type="Lead" />
+    <aura:attribute name="openTransferCallModal" type="Boolean" default="false" />    
+    <aura:attribute name="fields" type="String[]" default="Name,Phone,Call_Type__c" />
+    <aura:attribute name="dispositionOptionList" type="List"/>
+    <aura:attribute name="dispositionTask" type="Object"/>
+    <aura:attribute name="callNotes" type="String" default=""/>
+    <aura:attribute name="followUpNotes" type="String" default=""/>
+    <aura:attribute name="nextCallButtonFlag" type="Boolean" default="true"/>
+    <aura:attribute name="dispositionValue" type="String" default=""/>
+    <aura:attribute name="dispositionDupValue" type="String" default=""/>
+    <aura:attribute name="callerId" type="String" default=""/>
+    <aura:attribute name="defaultDate" type="DateTime" default=""/>
+    <aura:attribute name="activityDate" type="DateTime" default=""/>
+    <aura:attribute name="allAgentsList" type="List"/>
+    <aura:attribute name="callAgentButtonDisableFlag" type="Boolean" default="true"/>
+    <aura:attribute name="leadInputModalBox" type="Boolean" default="false"/>
+    <aura:attribute name="leadFirstName" type="String"  />
+    <aura:attribute name="leadLastName" type="String"  />
+    <aura:attribute name="HideSpinner" type="Boolean" default="false"/>
+    <aura:attribute name="incomingOnlyFlag" type="Boolean" default="false"/>
+    <aura:attribute name="outboundOnlyFlag" type="Boolean" default="false"/>
+    <aura:attribute name="isLoggedInFlag" type="Boolean" default="false"/>
+    <aura:attribute name="isLeadFlag" type="Boolean" default="false"/>
+    <aura:attribute name="getCallDataResponse" type="string" default="false"/>
+    <aura:attribute name="onlineFLag" type="Boolean" default="false"/>
+    <aura:attribute name="enrollmentOnFlag" type="Boolean" default="false"/>
+    <aura:attribute name="enrollmentCallFlag" type="Boolean" default="false"/>
+    
+    
+    <lightning:utilityBarAPI aura:id="utilitybar" />
+    <lightning:omniToolkitAPI aura:id="omniToolkit" />
+    <lightning:workspaceAPI aura:id="workspace" />
+    
+     <aura:handler event="c:LeadSoftphoneCallToLead" name="callToLead" action="{! c.handleEnrollmentCall }"/> 
+    <aura:handler event="lightning:omniChannelStatusChanged" action="{! c.onStatusChanged }"/>
+    <aura:handler event="lightning:omniChannelWorkAssigned" action="{!c.onWorkAssigned}"/>
+    <aura:handler event="lightning:omniChannelLogout" action="{!c.handleOmniLogOut}"/>
+    <aura:handler name="init" value="{!this}" action="{!c.load}" />
+    
+    <aura:method name="handleOnOnline" action="{!c.handleOnOnline}" />
+    <aura:method name="callNextCall" action="{!c.callNextCall}" />
+    
+    
+    <aura:if isTrue="{!v.error}">
+        <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+            <span class="slds-assistive-text">Error</span>
+            <h2>{!v.ErrorMsg}</h2>
+            <div class="slds-notify__close">
+                <lightning:buttonIcon iconName="utility:close"
+                                      onclick="{! c.closeModel }"
+                                      alternativeText="Close"
+                                      variant="bare-inverse"
+                                      class="slds-icon slds-icon_x-small"/>
+            </div>
+        </div>
+    </aura:if>
+    <div class="slds-grid slds-wrap slds-p-around_x-small bottomBorder">
+        
+        <div class="slds-size_11-of-12 ">
+            <aura:if isTrue="{!v.selectedStatus}">
+                <div class="slds-media slds-media--center slds-has-flexi-truncate" data-aura-rendered-by="686:0">                    
+                    <div class="slds-media__figure slds-m-right--x-small" data-aura-rendered-by="687:0">
+                        <span class="slds-icon_container iconOverride" data-aura-rendered-by="688:0">
+                            <lightning:icon aura:id="selectedStatus" iconName="utility:record" size="x-small" class="" data-aura-rendered-by="689:0"/>       
+                        </span>
+                    </div>
+                    <div class="slds-media__body" data-aura-rendered-by="690:0">
+                        <h2 class="panelTitle slds-truncate" id="title_679:0" title="Phone" data-aura-rendered-by="691:0">                     
+                            {!v.selectedStatus}
+                        </h2>
+                    </div>
+                </div>
+            </aura:if>     
+        </div>
+        <div class="slds-size_1-of-12  ">
+            <lightning:buttonMenu aura:id="statusMenu" onselect="{!c.handleStatusMenuSelect }" alternativeText="Show menu" menuAlignment="right">
+                <lightning:menuItem value="Online" label="Online – Outbound &amp; Inbound" class="Online" iconName="utility:record" onactive="{!c.handleOnMenuActive}"/>
+                <lightning:menuItem value="Online – Inbound Only" label="Online – Inbound Only" onactive="{!c.handleOnMenuActive}" class="Online_Waiting_for_Inbound_Call" iconName="utility:record"/>
+                <lightning:menuItem value="Online - Outbound Calls Only" label="Online - Outbound Calls Only" onactive="{!c.handleOnMenuActive}" class="Online" iconName="utility:record"/>
+                <lightning:menuItem value="Break" label="Break" class="Break" iconName="utility:record" onactive="{!c.handleOnMenuActive}" />
+                <lightning:menuItem value="Break - 15 Minutes" label="Break - 15 Minutes" class="Break_15_minutes" iconName="utility:record" onactive="{!c.handleOnMenuActive}" />
+                <lightning:menuItem value="Lunch" label="Lunch" class="Lunch" iconName="utility:record" onactive="{!c.handleOnMenuActive}"/>
+                <lightning:menuItem value="Off Phones - Training" label="Off Phones - Training" class="Off_phones_training" iconName="utility:record" onactive="{!c.handleOnMenuActive}"/>
+                <lightning:menuItem value="Off Phones - Meeting" label="Off Phones - Meeting" class="Off_phones_meetinng" iconName="utility:record" onactive="{!c.handleOnMenuActive}"/>
+                <lightning:menuItem value="Offline - Manual Dialing" label="Offline - Manual Dialing" class="Manual_Dialing" iconName="utility:record" onactive="{!c.handleOnMenuActive}"/>
+                <lightning:menuItem value="Inbound - Enrollment / Receive Transfer" label="Inbound - Enrollment / Receive Transfer" class="Waiting_for_Call" iconName="utility:record" onactive="{!c.handleOnMenuActive}"/>
+                
+                <lightning:menuItem value="Offline" label="Offline" class="Offline" iconName="utility:record" onactive="{!c.handleOnMenuActive}" />
+            </lightning:buttonMenu> 
+        </div>
+        <aura:if isTrue="{!v.onlineFLag}">
+            <aura:if isTrue="{!!v.enrollmentOnFlag}">
+            	<div class="slds-size_12-of-12 slds-p-left_xx-small slds-p-right_xx-small bottomBorder">	
+                	<div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                    	<div class="slds-size_6-of-12" >
+                        	<div class="slds-form-element slds-form-element_stacked slds-is-editing">
+                            	<label class="slds-form-element__label" for="fullName">Full Name</label>
+                            	<div class="slds-form-element__control">
+                                	<label class="fieldLabel" aura:id="fullName">{!v.lead.Name}</label>
+                            	</div>
+                        	</div>
+                    	</div>
+                    	<div class="slds-size_6-of-12" >
+                        	<div class="slds-form-element slds-form-element_stacked slds-is-editing">
+                            	<label class="slds-form-element__label" for="stacked-form-element-id-01">Phone</label>
+                            	<div class="slds-form-element__control">
+                                	<label class="fieldLabel" for="stacked-form-element-id-01">
+                                    	<aura:if isTrue="{!empty(v.lead.Phone)}">
+                                        	{!v.callerId}
+                                        	<aura:set attribute="else">
+                                            	<aura:if isTrue="{AND(!!v.incomingOnlyFlag,!empty(v.lead.Phone))}">
+                                                	{!v.lead.MobilePhone}
+                                                	<aura:set attribute="else">
+                                                    	{!v.lead.Phone}
+                                                	</aura:set>
+                                            	</aura:if> 
+                                        	</aura:set>
+                                    	</aura:if>
+                                	</label>
+                            	</div>
+                        	</div>
+                    	</div>
+                	</div>   
+            	</div>
+            </aura:if>
+            <aura:if isTrue="{!v.isLeadFlag}">
+                <div class="slds-size_12-of-12"> 
+                    <lightning:combobox name="Disposition" label="Disposition" value="{!v.dispositionValue}" placeholder="Select Dispositions" options="{! v.dispositionOptionList }" onchange="{!c.handleDispostionChange }"/>
+                </div>
+                <div class="slds-size_12-of-12 bottomBorder">
+                    <lightning:textarea name="Call Notes" label="Call Notes" aura:id="callNote" onchange="{!c.handleCallNotes}"/>
+                </div>
+                <div class="slds-grid slds-size_12-of-12">
+                    <lightning:input aura:id="dueDate" onchange="{! c.onActivityDateChange }" class="slds-p-right_x-small slds-size_12-of-12" type="datetime" name="Activity Date" label="Activity Date" value="" min="{!v.defaultDate}"/>
+                    <!-- <lightning:input class="slds-p-left_x-small slds-size_6-of-12" type="date" name="To Date" label="To Date" value="" /> -->
+                </div>
+                <div class="slds-size_12-of-12 bottomBorder">
+                    <lightning:textarea name="" label="Follow up Notes" aura:id="followupTaskNotes" onchange="{!c.handleFollowupNotes}"/>
+                </div>
+                <aura:set attribute="else">
+                    <div class="emptyBox">
+                    </div>
+                </aura:set>
+            </aura:if>
+            <aura:if isTrue="{!v.enrollmentOnFlag}"> 
+                <aura:if isTrue="{!!v.enrollmentCallFlag}">
+                    <c:LeadSoftphoneEnrollmentCallList authKey="{!v.authKey}" />
+                </aura:if>
+                <aura:if isTrue="{!v.enrollmentCallFlag}">
+                    <div style="height : 250px !important;width : 100% !important;">
+                    </div>
+                    <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                        <lightning:button class="slds-size_6-of-12" label="Finish Call" title="Finish Call" onclick="{!c.handleEndCall}"/>
+                        <lightning:button class="slds-size_6-of-12" label="Back to Queue" title="Back to Queue" onclick="{!c.backToQueue}"/>
+                    </div>
+                    <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                        <lightning:button class="slds-size_6-of-12" label="Transfer Call" title="Transfer Call" onclick="{!c.handleTransferCall}"/>
+                        <lightning:button class="slds-size_6-of-12 " label="Hold" title="Hold" onclick="{!c.handleHoldCall}"/>
+                    </div>
+                    <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                        <lightning:button class="slds-size_6-of-12 " label="Merge Call" title="Merge Call" onclick="{!c.handleMergeCall}"/>
+                        <lightning:button class="slds-size_6-of-12" label="Switch Party" title="Transfer Flip" onclick="{!c.handleTransferFlipAPI}"/>
+                    </div>
+                    <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                        <lightning:button class="slds-size_6-of-12" label="Cancel Transfer" title="Cancel Transfer" onclick="{!c.handleCancelTransferAPI}"/>
+                    </div>
+                </aura:if>
+            </aura:if>
+            <aura:if isTrue="{!!v.enrollmentOnFlag}"> 
+                <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                    <lightning:button class="slds-size_6-of-12" label="End Call" title="End Call" onclick="{!c.handleEndCall}"/>
+                    <aura:if isTrue ="{!v.incomingOnlyFlag}">
+                        <lightning:button class="slds-size_6-of-12 " label="Next Call" title="Next Call" disabled="{!v.nextCallFlag}" onclick="{!c.handleInputOnlyNextCall}"/>
+                        <aura:set attribute="else">
+                            <aura:if isTrue ="{!v.outboundOnlyFlag}">
+                                <lightning:button class="slds-size_6-of-12 " label="Next Call" title="Next Call" disabled="{!v.nextCallFlag}" onclick="{!c.handleOutboundOnlyNextCall}"/>
+                                <aura:set attribute="else">
+                                    <lightning:button class="slds-size_6-of-12 " label="Next Call" title="Next Call" disabled="{!v.nextCallFlag}" onclick="{!c.handleNextCall}"/>
+                                </aura:set>
+                            </aura:if>
+                        </aura:set>
+                    </aura:if>
+                </div>
+                <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                    <lightning:button class="slds-size_6-of-12" label="Redial" title="Redial" onclick="{!c.handleRedialCallAPI}"/>
+                    <lightning:button class="slds-size_6-of-12 " label="Hold" title="Hold" onclick="{!c.handleHoldCall}"/>
+                </div>
+                <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                    <lightning:button class="slds-size_6-of-12" label="Transfer Call" title="Transfer Call" onclick="{!c.handleTransferCall}"/>
+                    <lightning:button class="slds-size_6-of-12 " label="Merge Call" title="Merge Call" onclick="{!c.handleMergeCall}"/>
+                </div>
+                <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                    <lightning:button class="slds-size_6-of-12" label="Switch Party" title="Transfer Flip" onclick="{!c.handleTransferFlipAPI}"/>
+                    <lightning:button class="slds-size_6-of-12" label="Cancel Transfer" title="Cancel Transfer" onclick="{!c.handleCancelTransferAPI}"/>
+                </div>
+            </aura:if>
+        </aura:if>  
+        <aura:if isTrue="{!v.openTransferCallModal}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- modal header start -->
+                    <header class="slds-modal__header">
+                        <lightning:buttonIcon iconName="utility:close"
+                                              onclick="{! c.closeTransferCallModel }"
+                                              alternativeText="close"
+                                              variant="bare-inverse"
+                                              class="slds-modal__close"/>
+                        <h5 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Transfer Agent Details</h5>
+                    </header>
+                    <!-- modal body start -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div class="slds-align_absolute-center">
+                            <lightning:select name="Select Agent" label="Select Agent" onchange="{! c.handleSelectAgnetChange }" aura:id="agentLookup" value="{!v.agentNumber}">
+                                <option value="">-Select-</option>
+                                <aura:iteration items="{!v.allAgentsList}" var="option">
+                                    <option text="{!option.Name}" value="{!option.Phone}"></option>
+                                </aura:iteration>
+                            </lightning:select>
+                        </div>
+                    </div>
+                    <!-- modal footer start-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="neutral" 
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeTransferCallModel }"/>
+                        <lightning:button variant="brand" 
+                                          label="Call Agent"
+                                          title="Call Agent" disabled="{!v.callAgentButtonDisableFlag}"
+                                          onclick="{! c.handleCallAgent }"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+        </aura:if>
+        <aura:if isTrue="{!v.leadInputModalBox}">
+            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container">
+                    <!-- modal header start -->
+                    <header class="slds-modal__header">
+                        <h5 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Inbound Lead Details</h5>
+                    </header>
+                    <!-- modal body start -->
+                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                        <div>
+                            <lightning:input aura:id="leadFirstName" label="First Name" value="{!v.leadFirstName}"/>
+                            <lightning:input aura:id="leadLastName" label="Last Name" value="{!v.leadLastName}"/>
+                            <div class="slds-form-element slds-form-element_stacked slds-is-editing">
+                                <label class="slds-form-element__label" for="stacked-form-element-id-01">Phone</label>
+                                <div class="slds-form-element__control">
+                                    <label class="fieldLabel" for="stacked-form-element-id-01">{!v.callerId}</label>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <!-- modal footer start-->
+                    <footer class="slds-modal__footer">
+                        <lightning:button variant="brand" 
+                                          label="Save"
+                                          title="Save"
+                                          onclick="{! c.saveLead }"/>
+                        <lightning:button variant="neutral" 
+                                          label="Cancel"
+                                          title="Cancel"
+                                          onclick="{! c.closeLeadInputModel }"/>
+                    </footer>
+                </div>
+            </section>
+            <div class="slds-backdrop slds-backdrop_open"></div>
+            <!--###### MODAL BOX Part END Here ######-->
+        </aura:if>
+    </div>
+</aura:component>

@@ -1,0 +1,97 @@
+<aura:component controller="LeadSoftphoneComponent_ctl" implements="force:lightningQuickActionWithoutHeader,force:hasRecordId,force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome" access="global">
+    <aura:attribute name="error" type="Boolean" default="false" />
+    <aura:attribute name="holdFlag" type="Boolean" default="false" />
+    <aura:attribute name="showDetails" type="Boolean" default="true" />
+    <aura:attribute name="isOutboundCall" type="Boolean" default="false" />
+    <aura:attribute name="isLoggedInFlag" type="Boolean" default="false" />
+    <aura:attribute name="openTransferCallModal" type="Boolean" default="false" />
+    <aura:attribute name="callAgentButtonDisableFlag" type="Boolean" default="false" />
+    <aura:attribute name="lead" type="Lead" />
+    
+    <aura:attribute name="ErrorMsg" type="String" default=""/>
+    <aura:attribute name="authKey" type="String" default=""/>
+    <aura:attribute name="agentNumber" type="String" default=""/>
+    <aura:attribute name="allAgentsList" type="List"/>
+    
+    <aura:handler name="init" value="{!this}" action="{!c.load}" />
+    <lightning:card title="Direct Dialer">
+        <aura:if isTrue="{!v.error}">
+            <div class="slds-notify slds-notify_alert slds-theme_alert-texture slds-theme_error" role="alert">
+                <span class="slds-assistive-text">Error</span>
+                <h2>{!v.ErrorMsg}</h2>
+                <div class="slds-notify__close">
+                    <lightning:buttonIcon iconName="utility:close"
+                                          onclick="{!c.closeModel}"
+                                          alternativeText="Close"
+                                          variant="bare-inverse"
+                                          class="slds-icon slds-icon_x-small"/>
+                </div>
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.showDetails}">
+            <div class="slds-grid slds-wrap slds-p-around_x-small">
+                <lightning:button class="slds-size_1-of-1"  variant="brand" label="Make Call" title="Make Call" onclick="{!c.handleMakeCall}"/>  
+            </div>
+        </aura:if>
+        <aura:if isTrue="{!v.isOutboundCall}">
+            <div class="slds-grid slds-wrap slds-p-around_x-small bottomBorder">
+                <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                    <lightning:button class="slds-size_6-of-12" label="End Call" title="End Call" onclick="{!c.handleEndCall}"/>
+                    <lightning:button class="slds-size_6-of-12 " label="Hold" title="Hold" onclick="{!c.handleHoldCall}"/>
+                    
+                </div>
+                <!--    <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+             <lightning:button class="slds-size_6-of-12 " label="Next Call" title="Next Call" disabled="{!v.nextCallFlag}" onclick="{!c.handleNextCall}"/>    
+                <lightning:button class="slds-size_6-of-12" label="Redial" title="Redial" onclick="{!c.handleRedialCallAPI}"/>               
+        </div> -->
+                <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                    <lightning:button class="slds-size_6-of-12" label="Transfer Call" title="Transfer Call" onclick="{!c.handleTransferCall}"/>
+                    <lightning:button class="slds-size_6-of-12 " label="Merge Call" title="Merge Call" onclick="{!c.handleMergeCall}"/>
+                </div>
+                <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                    <lightning:button class="slds-size_6-of-12" label="Switch Party" title="Transfer Flip" onclick="{!c.handleTransferFlipAPI}"/>
+                    <lightning:button class="slds-size_6-of-12" label="Cancel Transfer" title="Cancel Transfer" onclick="{!c.handleCancelTransferAPI}"/>
+                </div>
+                <aura:if isTrue="{!v.openTransferCallModal}">
+                    <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+                        <div class="slds-modal__container">
+                            <!-- modal header start -->
+                            <header class="slds-modal__header">
+                                <lightning:buttonIcon iconName="utility:close"
+                                                      onclick="{! c.closeTransferCallModel }"
+                                                      alternativeText="close"
+                                                      variant="bare-inverse"
+                                                      class="slds-modal__close"/>
+                                <h5 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Transfer Agent Details</h5>
+                            </header>
+                            <!-- modal body start -->
+                            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                                <div class="slds-align_absolute-center">
+                                    <lightning:select name="Select Agent" label="Select Agent" onchange="{! c.handleSelectAgnetChange }" aura:id="agentLookup" value="{!v.agentNumber}">
+                                        <option value="">-Select-</option>
+                                        <aura:iteration items="{!v.allAgentsList}" var="option">
+                                            <option text="{!option.Name}" value="{!option.Phone}"></option>
+                                        </aura:iteration>
+                                    </lightning:select>
+                                </div>
+                            </div>
+                            <!-- modal footer start-->
+                            <footer class="slds-modal__footer">
+                                <lightning:button variant="neutral" 
+                                                  label="Cancel"
+                                                  title="Cancel"
+                                                  onclick="{! c.closeTransferCallModel }"/>
+                                <lightning:button variant="brand" 
+                                                  label="Call Agent"
+                                                  title="Call Agent" disabled="{!v.callAgentButtonDisableFlag}"
+                                                  onclick="{! c.handleCallAgent }"/>
+                            </footer>
+                        </div>
+                    </section>
+                    <div class="slds-backdrop slds-backdrop_open"></div>
+                    <!--###### MODAL BOX Part END Here ######-->
+                </aura:if>
+            </div>
+        </aura:if>
+    </lightning:card>
+</aura:component>

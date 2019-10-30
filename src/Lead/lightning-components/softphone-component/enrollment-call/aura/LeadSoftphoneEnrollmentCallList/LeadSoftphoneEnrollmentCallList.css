@@ -1,0 +1,11 @@
+.THIS .fieldLabel{
+    border-bottom: 1px solid rgb(217, 219, 221)!important;
+	overflow-wrap: break-word !important;
+    word-wrap: break-word !important;
+    word-break: break-word !important;
+    display: inline-block !important;
+    font-size: .8125rem !important;
+    font-weight: 400 !important;
+    color: rgb(8, 7, 7) !important;
+	font-family: 'Salesforce Sans',Arial,sans-serif !important;
+}
