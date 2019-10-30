@@ -198,7 +198,7 @@ public class LeadTriggerHandlerTest{
             leadsToInsert.add(testLead);
         }        
         insert leadsToInsert;
-    // The routeUsingSkills method is invoked by a process builder called "Skills-Based Routing". 
+    	// The routeUsingSkills method is invoked by a process builder called "Skills-Based Routing". 
         // The method gets run when a lead owner is updated to the Hopper queue.         
         Group hopperQueue = [select Id from Group where Name = 'Hopper' and Type = 'Queue' limit 1];        
         list<Lead> testLeads = [select Id, OwnerId from Lead where LastName LIKE 'Jason%'];        
@@ -224,6 +224,5 @@ public class LeadTriggerHandlerTest{
         // Check if PSRs have been deleted. There should be no PSR now.
         system.assertEquals(0, psrList.size());        
     }
-    
     
 }

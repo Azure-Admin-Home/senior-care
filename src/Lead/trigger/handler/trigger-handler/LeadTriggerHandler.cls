@@ -1,6 +1,6 @@
 /****************************************************************************************************************************************************
 * Class Name                     : LeadTriggerHandler
-* Created By                     : Suneel Sunkara 04/09/2019
+* Created By                     : Suneel Sunkara 09/04/2019
 * Test Class                     : LeadTriggerHandlerTest
 * Description                    : 
 *****************************************************************************************************************************************************
@@ -8,8 +8,9 @@
 *****************************************************************************************************************************************************
 * Story/Issue No.     Modified By        Modified Date            Modification Description                         
 *****************************************************************************************************************************************************
-* TASK-392832014     Suneel                 09/04/2019          Added methods to calcualte Lead Score
-* N/A         Jason Fung        10/03/2019      Remove PendingServiceRouting from lead when a lead is reassigned from Hopper to another person/queue
+* TASK-392832014      Suneel             09/04/2019          	  Added methods to calcualte Lead Score
+* N/A         		  Jason Fung         10/03/2019      		  Remove PendingServiceRouting from lead when a lead is reassigned from Hopper to another person/queue
+* N/A				  Jason Fung		 10/24/2019				  Seperate the deleteLeadPSR() method from the Lead Trigger Toggle so that it is not affected by the toggle in custom metadata setting. 
 *****************************************************************************************************************************************************/
 
 public class LeadTriggerHandler {
@@ -34,12 +35,11 @@ public class LeadTriggerHandler {
     }
     
     public static void afterUpdateHandler(map<Id, Lead> oldLeadMap , List<Lead> newLeadList){
-        // Call deleteLeadPSR method
-        deleteLeadPSR(oldLeadMap, newLeadList);                
+                  
     }
     
     // Remove PendingServiceRouting from lead when a lead is reassigned from Hopper to another person/queue
-    private static void deleteLeadPSR(map<Id, Lead> oldLeadMap, list<Lead> newLeadList) {
+    public static void deleteLeadPSR(map<Id, Lead> oldLeadMap, list<Lead> newLeadList) {
         
         set<Id> leadIds = new set<Id>(); 
         
