@@ -93,3 +93,8 @@
 .THIS lightning-icon.Wrap_Up > a > lightning-primitive-icon > svg > use{
     fill: var(--lwc-colorTextWarning,rgb(255, 183, 93));
 }
+
+.THIS .end-call-active {
+    background-color: red;
+    color: white;
+}
