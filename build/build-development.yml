@@ -49,7 +49,7 @@ stages:
         testResultsFiles: '$(build.path)/test-report-xml/*.xml'
         testRunTitle: 'Unit Tests'
 
-    - bash:
+    - script:
         echo cd $(build.path)
         cd $(build.path)
 
