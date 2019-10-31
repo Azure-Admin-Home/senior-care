@@ -242,6 +242,7 @@
             var callNotes = component.get("v.callNotes");
             var followupTaskNotes = component.get("v.followUpNotes");
             var defaultDate = component.get("v.activityDate");
+            component.set("v.activityDate", "");
             var getCallDataResponse = component.get("v.getCallDataResponse");
             
             var mainResp = {};
@@ -357,6 +358,8 @@
             var followupTaskNotes = component.find("followupTaskNotes").get("v.value");
             var DueDate = component.find("dueDate").get("v.value");
             var defaultDate = component.get("v.activityDate");
+            component.set("v.activityDate", "");
+            console.log("CHECK activityDate: " + defaultDate);
             var getCallDataResponse = component.get("v.getCallDataResponse");
             var dispositionValue =  component.get("v.dispositionValue");
             
@@ -384,6 +387,7 @@
                 mainResp['isEvent'] =  true;
             }
             var respJson = JSON.stringify(mainResp);
+            console.log("CHECK respJson: " + respJson);
             window.setTimeout(
                 $A.getCallback(function() {
                     helper.cancelGNNAPI(component,event,helper);
@@ -414,6 +418,7 @@
             var callNotes = component.get("v.callNotes");
             var followupTaskNotes = component.get("v.followUpNotes");
             var defaultDate = component.get("v.activityDate");
+            component.set("v.activityDate", "");
             var getCallDataResponse = component.get("v.getCallDataResponse");
             var dispositionValue =  component.get("v.dispositionValue");
             
@@ -460,6 +465,7 @@
             var callNotes = component.get("v.callNotes");
             var followupTaskNotes = component.get("v.followUpNotes");
             var defaultDate = component.get("v.activityDate");
+            component.set("v.activityDate", "");
             var getCallDataResponse = component.get("v.getCallDataResponse");
             var dispositionValue =  component.get("v.dispositionValue");
             
