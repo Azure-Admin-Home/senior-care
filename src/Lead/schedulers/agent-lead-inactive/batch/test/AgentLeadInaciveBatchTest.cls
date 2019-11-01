@@ -28,22 +28,29 @@ private class AgentLeadInaciveBatchTest {
         Lead testLead_4 = TestFactory.newLead(name_4);
              testLead_4.OwnerId = unassignedQueueId;
 
-        insert new List<Lead>{testLead_1, testLead_2, testLead_3, testLead_4};
+        String name_5 = 'Not Changed Lead 4';
+        Lead testLead_5 = TestFactory.newLead(name_5);
+             testLead_5.OwnerId = testUser.Id;
+
+        insert new List<Lead>{testLead_1, testLead_2, testLead_3, testLead_4, testLead_5};
+
+        Datetime createdDate = Datetime.now().addDays(-8);
+        Test.setCreatedDate(testLead_3.Id, createdDate);
 
         AgentLeadInaciveBatch batch = new AgentLeadInaciveBatch();
         Test.startTest();
             Database.executeBatch(batch);
         Test.stopTest();
         
-        Lead reassignmentLead = [SELECT OwnerID FROM Lead WHERE LastName = :name_3];
+        Lead reassignmentLead = [SELECT OwnerID, AEP_Callback_Year__c, All_Event_Activities_for_Last_7_Days__c FROM Lead WHERE LastName = :name_3];
         System.assertEquals(unassignedQueueId, reassignmentLead.OwnerId);
+        System.assertEquals(null, reassignmentLead.AEP_Callback_Year__c);
+        System.assertEquals(0, reassignmentLead.All_Event_Activities_for_Last_7_Days__c);
 
-        Set<String> unassignedNames = new Set<String>{name_1, name_2};
-        Integer unassignedLeads = [SELECT COUNT() FROM Lead WHERE LastName IN :unassignedNames];
+        Integer unassignedLeads = [SELECT COUNT() FROM Lead WHERE OwnerId = :unassignedQueueId];
         System.assertEquals(2, unassignedLeads);
 
-        Set<String> unchangedNames = new Set<String>{name_1, name_2};
-        Integer notReassignmentLead = [SELECT COUNT() FROM Lead WHERE LastName IN :unchangedNames];
-        System.assertEquals(2, notReassignmentLead);
+        Integer notReassignmentLead = [SELECT COUNT() FROM Lead WHERE OwnerId != :unassignedQueueId];
+        System.assertEquals(3, notReassignmentLead);
     }
 }
