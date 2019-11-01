@@ -6,13 +6,13 @@ public class AgentLeadInaciveBatch implements Database.Batchable<sObject>{
     public AgentLeadInaciveBatch() {
         String collectedQuery = 'SELECT Id, OwnerId FROM Lead ' +
                                 'WHERE AEP_Callback_Year__c = NULL ' + 
+                                'AND CreatedDate < LAST_N_DAYS:7 ' +
                                 'AND All_Event_Activities_for_Last_7_Days__c = 0 ';
-        
+        Group unassignedQueue = GroupUtils.getGroup('Unassigned');
+        this.unassignedQueueId = unassignedQueue.Id;
+
         for(Group queue : [SELECT Id, DeveloperName FROM Group WHERE Type = 'Queue']){
             collectedQuery += 'AND OwnerId != \'' + queue.Id + '\' ';
-            if(queue.DeveloperName == 'Unassigned'){
-                this.unassignedQueueId = queue.Id;
-            }
         }
 
         this.query = collectedQuery;
