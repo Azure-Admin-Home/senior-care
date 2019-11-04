@@ -23,8 +23,19 @@ public static void execute()
 			else
 			{
 				DateTime startDate = DateTime.newInstance(System.today(), lead.First_Dial_Time__c).addMinutes(5);
-				DateTime nextTime = lastDialAttempt.addHours(Integer.valueOf(lead.Daily_Call_Rest_Time__c));
-				nextDialAttempt = nextTime > startDate ? nextTime : startDate;
+				DateTime restTime = lastDialAttempt.addHours(Integer.valueOf(lead.Daily_Call_Rest_Time__c));
+				DateTime nextTime = System.now().addMinutes(5);
+				if (startDate > System.now())
+				{
+					nextDialAttempt = startDate;
+				}
+				else if (lead.Dial_Attempts_Today__c == 0)
+				{
+					nextDialAttempt = nextTime;
+				}
+				else {
+					nextDialAttempt = restTime;
+				}
 			}
 			if (nextDialAttempt < System.now()) nextDialAttempt = System.now().addMinutes(5);
 		}
