@@ -51,6 +51,7 @@
         component.set("v.endCallFlag",false);
         component.set("v.nextCallFlag",true);
         component.set("v.getCallDataResponse","");
+        component.set("v.callFinished", true);
         helper.terminateQsuiteCall(component,event,authKey);
     },
     onWorkAssigned : function(component,event,helper)
@@ -122,6 +123,7 @@
             component.set("v.incomingOnlyFlag",false);
             component.set("v.enrollmentOnFlag", false);
             component.set("v.enrollmentCallFlag", false);
+            component.set("v.callFinished", true);
         }else if(selectedMenuItemValue === 'Offline'){
        	  	component.set("v.incomingOnlyFlag",false);
             component.set("v.onlineFLag",false);
@@ -141,6 +143,7 @@
                 console.log(error);
             });
             component.set("v.leadphoneOnlineFlag",false);
+            component.set("v.callFinished", true);
         }else if(selectedMenuItemValue ===  'Online – Inbound Only'){
             helper.handleMiniDialerVisibility(component,event,false);
             component.set("v.incomingOnlyFlag",true);
@@ -161,6 +164,7 @@
             }
             component.set("v.omniOnlineFlag",false);
             component.set("v.leadphoneOnlineFlag",false);
+            component.set("v.callFinished", true);
         }else if(selectedMenuItemValue ===  'Online - Outbound Calls Only'){
            
             helper.handleMiniDialerVisibility(component,event,false);
@@ -169,6 +173,7 @@
             component.set("v.omniOnlineFlag",false);
             component.set("v.enrollmentOnFlag", false);
             component.set("v.enrollmentCallFlag", false);
+            component.set("v.callFinished", true);
             if(onlineFLag)
             {
                 helper.logOutFromQsuite(component,event,authKey);
@@ -194,6 +199,7 @@
             helper.loginToQsuiteForManualDialing(component,event,omniAPI);
             component.set("v.leadphoneOnlineFlag",false);
             component.set("v.lead","");
+            component.set("v.callFinished", true);
         }else if (selectedMenuItemValue === 'Inbound - Enrollment / Receive Transfer') {
             let inboundOn = false;
             console.log("CHECK in Inbound - Enrollment item");
@@ -204,7 +210,8 @@
             helper.loginToQsuite(component, event, omniAPI, inboundOn, () => {
                component.set("v.onlineFLag", true);
                component.set("v.incomingOnlyFlag", false);
-               component.set("v.enrollmentOnFlag", true); 
+               component.set("v.enrollmentOnFlag", true);
+               component.set("v.callFinished", true);
             });
             var statusString = $A.get("$Label.c.Status_Json");
             var statusList = JSON.parse(statusString);
@@ -596,10 +603,12 @@
     },
     handleEnrollmentCall: function (component, event, helper) {
         component.set("v.enrollmentCallFlag", true);
+        component.set("v.callFinished", false);
         helper.enrollmentCall(component, event, helper);
     },
     backToQueue: function (component, event, helper) {
         component.set("v.enrollmentCallFlag", false);
+        component.set("v.callFinished", true);
         var a = component.get('c.handleEndCall');
         $A.enqueueAction(a);
     },

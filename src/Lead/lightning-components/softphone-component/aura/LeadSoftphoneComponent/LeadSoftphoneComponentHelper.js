@@ -231,6 +231,7 @@
                     component.set("v.leadLastName","");
                     component.set("v.callerId",resp.callerMobileNumber);
                     component.set("v.leadInputModalBox",true);
+                    component.set("v.callFinished",false);
                     component.set("v.dispositionValue","");
                     component.set("v.authKey",resp.authKey);
                 }
@@ -707,6 +708,7 @@
                     component.set("v.leadLastName","");
                     component.set("v.callerId",resp.callerMobileNumber);
                     component.set("v.leadInputModalBox",true);
+                    component.set("v.callFinished",false);
                     component.set("v.dispositionValue","");
                     component.find("callNotes").set("v.value","");
                     component.find("followupTaskNotes").set("v.value","");
@@ -979,6 +981,7 @@
                 component.set("v.leadLastName","");
                 component.set("v.callerId",resp.callerMobileNumber);
                 component.set("v.leadInputModalBox",true);
+                component.set("v.callFinished",false);
                 component.set("v.dispositionValue","");
             }
             else
@@ -1191,15 +1194,31 @@
             console.log(error);
         });
     },
+
     nextCallButtonValidation : function(component) {
-        const disposition = component.get("v.dispositionValue");
-        const endCallFlag = component.get("v.endCallFlag");
-        const isCallNotEnded = (endCallFlag === false);
+        const isLead = component.get("v.isLeadFlag");
+        const callFinished = component.get("v.callFinished");
+        console.log("CHECK callFinished: ", callFinished);
+        const isCallNotFinished = (callFinished === false);
+        console.log("CHECK isCallNotFinished: ", isCallNotFinished);
+
+        let disableNextCall;
+        
+        if(isLead === true){
+            const disposition = component.get("v.dispositionValue");
+            disableNextCall = this.createLeadValidation(disposition, isCallNotFinished);
+        } else {
+            disableNextCall = isCallNotFinished;
+        }
+        
+        component.set("v.nextCallFlag", disableNextCall);
+    },
+
+    createLeadValidation : function(disposition, isCallNotFinished){
         const isDispUndefined = (disposition === undefined);
         const isDispEmpty = (disposition === "");
         const isDispNull = (disposition === null);
         const isDispositionNotSelected = isDispEmpty || isDispNull || isDispUndefined;
-        const disableNextCall = (isDispositionNotSelected || isCallNotEnded);
-        component.set("v.nextCallFlag", disableNextCall);
+        return (isDispositionNotSelected || isCallNotFinished);
     }
 })
