@@ -1,5 +1,8 @@
 @isTest
 private class AgentLeadInaciveBatchTest {
+    
+    private final static Id unassignedQueueId = GroupUtils.getGroupId('Unassigned');
+    
     @IsTest
     static void AgentLeadInactiveBatch_Test(){
         
@@ -21,8 +24,6 @@ private class AgentLeadInaciveBatchTest {
         String name_3 = 'Changed Lead 1';
         Lead testLead_3 = TestFactory.newLead(name_3);
              testLead_3.OwnerId = testUser.Id;
-
-        Id unassignedQueueId = [SELECT Id FROM Group WHERE Type = 'Queue' AND DeveloperName = 'Unassigned' LIMIT 1].Id;
 
         String name_4 = 'Not Changed Lead 3';
         Lead testLead_4 = TestFactory.newLead(name_4);
@@ -52,5 +53,46 @@ private class AgentLeadInaciveBatchTest {
 
         Integer notReassignmentLead = [SELECT COUNT() FROM Lead WHERE OwnerId != :unassignedQueueId];
         System.assertEquals(3, notReassignmentLead);
+    }
+
+    @IsTest
+    static void convertedLeads_NotChanged_Test(){
+         
+          User testUser = TestFactory.createTestUser();
+          insert testUser;
+         
+          List<String> aepCallbackYearVals = TestFactory.getPicklistValues('Lead', 'AEP_Callback_Year__c');
+ 
+          String name_1 = 'Not Converted Lead';
+          Lead testLead_1 = TestFactory.newLead(name_1);
+               testLead_1.OwnerId = testUser.Id;
+              
+          String name_2 = 'Converted Lead';
+          Lead testLead_2 = TestFactory.newLead(name_2);
+               testLead_2.OwnerId = testUser.Id;
+              
+          insert new List<Lead>{testLead_1, testLead_2};
+
+          Datetime createdDate = Datetime.now().addDays(-8);
+          Test.setCreatedDate(testLead_1.Id, createdDate);
+          Test.setCreatedDate(testLead_2.Id, createdDate);
+         
+          LeadStatus convertStatus = [SELECT MasterLabel FROM LeadStatus WHERE IsConverted = TRUE LIMIT 1];            
+           
+          Database.LeadConvert leadConvert = new database.LeadConvert();
+                               leadConvert.setLeadId(testLead_2.Id);         
+                               leadConvert.setConvertedStatus(convertStatus.MasterLabel);
+          Database.convertLead(leadConvert);
+
+          AgentLeadInaciveBatch batch = new AgentLeadInaciveBatch();
+          Test.startTest();
+               Database.executeBatch(batch);
+          Test.stopTest();
+
+          Lead convertedLead = [SELECT OwnerId FROM Lead WHERE Id = :testLead_2.Id LIMIT 1];
+          System.assertEquals(testUser.Id, convertedLead.OwnerId);
+
+          Lead unconvertedLead = [SELECT OwnerId FROM Lead WHERE Id = :testLead_1.Id LIMIT 1];
+          System.assertEquals(unassignedQueueId, unconvertedLead.OwnerId);
     }
 }
