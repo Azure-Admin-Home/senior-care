@@ -38,6 +38,7 @@
     <aura:attribute name="onlineFLag" type="Boolean" default="false"/>
     <aura:attribute name="enrollmentOnFlag" type="Boolean" default="false"/>
     <aura:attribute name="enrollmentCallFlag" type="Boolean" default="false"/>
+    <aura:attribute name="callFinished" type="Boolean" default="true"/>
     
     
     <lightning:utilityBarAPI aura:id="utilitybar" />
@@ -163,7 +164,7 @@
                     <div style="height : 250px !important;width : 100% !important;">
                     </div>
                     <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
-                        <lightning:button class="slds-size_6-of-12" label="Finish Call" title="Finish Call" onclick="{!c.handleEndCall}"/>
+                        <lightning:button class="{!'slds-size_6-of-12 '+if( v.callFinished, '', 'end-call-active')}" label="Finish Call" title="Finish Call" onclick="{!c.handleEndCall}" disabled="{!v.callFinished}"/>
                         <lightning:button class="slds-size_6-of-12" label="Back to Queue" title="Back to Queue" onclick="{!c.backToQueue}"/>
                     </div>
                     <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
@@ -181,7 +182,7 @@
             </aura:if>
             <aura:if isTrue="{!!v.enrollmentOnFlag}"> 
                 <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
-                    <lightning:button class="slds-size_6-of-12" label="End Call" title="End Call" onclick="{!c.handleEndCall}"/>
+                    <lightning:button class="{!'slds-size_6-of-12 '+if( v.callFinished, '', 'end-call-active')}" label="End Call" title="End Call" onclick="{!c.handleEndCall}" disabled="{!v.callFinished}"/>
                     <aura:if isTrue ="{!v.incomingOnlyFlag}">
                         <lightning:button class="slds-size_6-of-12 " label="Next Call" title="Next Call" disabled="{!v.nextCallFlag}" onclick="{!c.handleInputOnlyNextCall}"/>
                         <aura:set attribute="else">
