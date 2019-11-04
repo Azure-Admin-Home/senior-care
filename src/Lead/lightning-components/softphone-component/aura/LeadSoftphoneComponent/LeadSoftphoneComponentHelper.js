@@ -888,21 +888,19 @@
                     component.set("v.lead",resp.lead);
                     component.set("v.isLeadFlag",true);
                     var workspaceAPI = component.find("workspace");
-                    workspaceAPI.openTab({
-                        pageReference: {
-                            "type": "standard__recordPage",
-                            "attributes": {
-                                "recordId":resp.lead.Id, //lead Id
-                                "actionName":"view"
-                            },
-                            "state": {}
-                        },
-                        focus: true
-                    }).then(function(response) {
-                        
-                    }).catch(function(error) {
-                        console.log(error);
-                    });
+                    workspaceAPI.getFocusedTabInfo()
+                    .then(response => {
+                        var focusedTabId = response.tabId;
+                        workspaceAPI.openTab({recordId: resp.lead.Id, 
+                                              focus: true}
+                        )
+                        .then(response => {
+                                workspaceAPI.closeTab({tabId: focusedTabId})
+                                .catch(error => console.log(error));
+                        })
+                        .catch( error => console.log(error));
+                    })
+                    .catch( error => console.log(error));
                     
                 }else{
                     console.log(resp.errorMsg);
