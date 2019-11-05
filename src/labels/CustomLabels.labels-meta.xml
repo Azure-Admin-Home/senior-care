@@ -33,6 +33,22 @@
         <value>/api/agents/naildown.json?auth_key=</value>
     </labels>
     <labels>
+        <fullName>Disposition_Default</fullName>
+        <categories>Lead Softphone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Disposition Default</shortDescription>
+        <value>Disposition Not selected</value>
+    </labels>
+    <labels>
+        <fullName>Disposition_Default_Statuses</fullName>
+        <categories>Lead Softphone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Disposition Default Statuses</shortDescription>
+        <value>[&quot;Online&quot;, &quot;Online – Inbound Only&quot;, &quot;Online - Outbound Calls Only&quot;]</value>
+    </labels>
+    <labels>
         <fullName>Disposition_List</fullName>
         <categories>Lead Softphone</categories>
         <language>en_US</language>
