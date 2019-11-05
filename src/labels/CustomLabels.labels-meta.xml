@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>Authorization_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Authorization API</shortDescription>
+        <value>/api/agents/authenticate.json?</value>
+    </labels>
+    <labels>
+        <fullName>Cancel_Transfer_call_API</fullName>
+        <categories>Lead SoftPhone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Cancel Transfer call API</shortDescription>
+        <value>/api/agents/cancelTransfer.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>CreatedLead_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>CreatedLead API</shortDescription>
+        <value>/api/agents/createLead.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Destroy_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Destroy API</shortDescription>
+        <value>/api/agents/naildown.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Disposition_Default</fullName>
+        <categories>Lead Softphone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Disposition Default</shortDescription>
+        <value>Disposition Not selected</value>
+    </labels>
+    <labels>
+        <fullName>Disposition_Default_Statuses</fullName>
+        <categories>Lead Softphone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Disposition Default Statuses</shortDescription>
+        <value>[&quot;Online&quot;, &quot;Online – Inbound Only&quot;, &quot;Online - Outbound Calls Only&quot;]</value>
+    </labels>
+    <labels>
+        <fullName>Disposition_List</fullName>
+        <categories>Lead Softphone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Disposition List</shortDescription>
+        <value>AEP Callback,Caller Disconnected - HANGUP,Committed Enrollment Customer to Callback,Current Member,Deceased,Do Not Call,Does Not Reside In Service Area,Enrollment - New Single,Escalated Call,Follow up - Agent Owned,Ghost Call,Language Barrier,MISC - Hang-up,No Answer,No Plans in Area - AEP Call back,NO Plans in Area - Bad Lead,Not Available,Not Eligible,Not Eligible - No SEP,Not Interested,Not interested - Benefits,Not Interested - Drugs not covered,Not Interested - Group/Union Coverage,Not interested - PCP not in network,Not Interested - Premium,Not Interested - TriCare,Post Enrollment,Skip Lead - NRTS (Not Ready To Sell),Skip Lead - Other,Transfer to RTS Agent,Unexpected Disconnection,Voicemail,Working with External Agent/Broker,Wrong Number</value>
+    </labels>
+    <labels>
+        <fullName>GetNailUp_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>GetNailUp API</shortDescription>
+        <value>/api/agents/getNailupTargets.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>GetQueuedCalls_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>GetQueuedCalls_API</shortDescription>
+        <value>/api/agents/getQueuedCalls.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Get_call_data_API</fullName>
+        <categories>Lead Softphone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Get call data API</shortDescription>
+        <value>/api/agents/getCallData.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Hangup_call_API</fullName>
+        <categories>Case Page Labels</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Hangup call API</shortDescription>
+        <value>/api/agents/hangupCall.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Load_Call_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Load Call API</shortDescription>
+        <value>/api/agents/loadCall.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>LogOut_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>LogOut API</shortDescription>
+        <value>/api/agents/logout.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Login_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Login API</shortDescription>
+        <value>/api/agents/login.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>NailDown_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>NailDown API</shortDescription>
+        <value>/api/agents/naildown.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Next_call_API</fullName>
+        <categories>Case Page Labels</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Next call API</shortDescription>
+        <value>/api/agents/nextCall.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Pause_call_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Pause call API</shortDescription>
+        <value>/api/agents/pause.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Redial_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Redial API</shortDescription>
+        <value>/api/agents/redialLead.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Status_Json</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Status Json</shortDescription>
+        <value>[
+{
+&quot;Id&quot;: &quot;0N53i0000008UyDCAU&quot;,
+&quot;MasterLabel&quot;: &quot;Break - 15 Minutes&quot;
+},
+
+{
+&quot;Id&quot;: &quot;0N53i0000008UvECAU&quot;,
+&quot;MasterLabel&quot;: &quot;Offline - Manual Dialing&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008V1BCAU&quot;,
+&quot;MasterLabel&quot;: &quot;Inbound - Enrollment / Receive Transfer&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008UvOCAU&quot;,
+&quot;MasterLabel&quot;: &quot;Wrap Up&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008OcKCAU&quot;,
+&quot;MasterLabel&quot;: &quot;Online&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008OcLCAU&quot;,
+&quot;MasterLabel&quot;: &quot;Online – Inbound Only&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008V1j&quot;,
+&quot;MasterLabel&quot;: &quot;Online - Outbound Calls Only&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008OcMCAU&quot;,
+&quot;MasterLabel&quot;: &quot;Break&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008OcOCAU&quot;,
+&quot;MasterLabel&quot;: &quot;Lunch&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008OcNCAU&quot;,
+&quot;MasterLabel&quot;: &quot;Off Phones - Training&quot;
+},
+{
+&quot;Id&quot;: &quot;0N53i0000008Uv9CAE&quot;,
+&quot;MasterLabel&quot;: &quot;Off Phones - Meeting&quot;
+}
+]</value>
+    </labels>
+    <labels>
+        <fullName>Terminate_Call</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Terminate Call</shortDescription>
+        <value>/api/agents/terminateCall.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Transfer_call_API</fullName>
+        <categories>Lead SoftPhone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Transfer call API</shortDescription>
+        <value>/api/agents/transferCall.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>Transfer_flip_API</fullName>
+        <categories>Lead SoftPhone</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>Transfer flip API</shortDescription>
+        <value>/api/agents/transferFlip.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>cancel_GNN_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>cancel GNN API</shortDescription>
+        <value>/api/agents/cancelGNN.json?auth_key=</value>
+    </labels>
+    <labels>
+        <fullName>onHold_Call_API</fullName>
+        <categories>Lead Phone Integration</categories>
+        <language>en_US</language>
+        <protected>false</protected>
+        <shortDescription>onHold Call API</shortDescription>
+        <value>/api/agents/holdCall.json?auth_key=</value>
+    </labels>
+</CustomLabels>

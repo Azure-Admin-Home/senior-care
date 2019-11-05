@@ -1220,5 +1220,105 @@
         const isDispNull = (disposition === null);
         const isDispositionNotSelected = isDispEmpty || isDispNull || isDispUndefined;
         return (isDispositionNotSelected || isCallNotFinished);
+    },
+
+    createLogCallForDefaultDispositionStatuses : function(component){
+        const isPrevStatusDefaultDisp = component.get("v.defaultDispStatus");
+        console.log("CHECK isPrevStatusDefaultDisp: ", isPrevStatusDefaultDisp);
+        const prevStatus = component.get("v.prevStatus");
+        console.log("CHECK prevStatus: ", prevStatus);
+        if(isPrevStatusDefaultDisp === true){
+            const isPrevStatusInboundOnly = (prevStatus === "Online – Inbound Only");
+            if(isPrevStatusInboundOnly){
+                this.createLogCallForInboundOnly(component);
+            } else {
+                this.populateDefaultDisposition(component);
+            }
+        }
+    },
+
+    createLogCallForInboundOnly : function(component){
+        const leadFlag = component.get("v.isLeadFlag");
+        console.log("CHECK leadFlag: ", leadFlag);
+        const isInboundLeadCreatedThrowDialer = (leadFlag === true);
+        if(isInboundLeadCreatedThrowDialer){
+            this.populateDefaultDisposition(component);
+        }
+    },
+
+    checkIfSelectedStatusDefaultDisposition : function(component, selectedStatus){
+        const defaultDispStatusesString = $A.get("$Label.c.Disposition_Default_Statuses");
+        const defaultDispStatuses = JSON.parse(defaultDispStatusesString);
+        let isDefaultDispostionStatus = false;
+        defaultDispStatuses.forEach( status => {
+            const isSelectedStatusDefaultDisposition = (selectedStatus === status);
+            if(isSelectedStatusDefaultDisposition){
+                isDefaultDispostionStatus = true;
+            }
+        });
+        component.set("v.defaultDispStatus", isDefaultDispostionStatus);
+    },
+
+    populateDefaultDisposition : function(component){
+        const disposition = component.get("v.dispositionValue");
+        const isDispositionNotSelected = this.checkIfDispositionNotSelected(disposition);
+        if(isDispositionNotSelected){
+            const defaultLog = this.createDefaultLog(component);
+            this.saveDefaultLog(component, defaultLog);
+        }
+    },
+
+    checkIfDispositionNotSelected: function(disposition){
+        const isDispUndefined = (disposition === undefined);
+        const isDispEmpty = (disposition === "");
+        const isDispNull = (disposition === null);
+        return isDispEmpty || isDispNull || isDispUndefined;
+    },
+
+    createDefaultLog : function(component){
+        const lead = component.get("v.lead");
+        const defaultDisposition = $A.get("$Label.c.Disposition_Default");
+        const callNotes = component.get("v.callNotes");
+        const getCallDataResponse = component.get("v.getCallDataResponse");
+        
+        const logCallTask = {"subject": defaultDisposition,
+                             "Notes": callNotes,
+                             "isDisposition": true};
+        
+        const createRequest = {"lead": lead,
+                               "isEvent": false,
+                               "isDisposition": true,
+                               "dispositionName": defaultDisposition,
+                               "getCallDataResp": getCallDataResponse,
+                               "taskElement": logCallTask};
+
+        return JSON.stringify(createRequest);
+    },
+    
+    saveDefaultLog : function(component, defaultLog){
+        const action = component.get("c.handleServerCall");
+        action.setParams({ reqJSON : defaultLog});
+        action.setCallback(this, response => {
+            const state = response.getState();
+            if (state === "SUCCESS") {
+                const resp = response.getReturnValue();
+                if(resp.isSucess){
+                    console.log("Default log created successful");
+                } else {
+                    console.log(resp.errorMsg);
+                }
+            } else if (state === "ERROR") {
+                const errors = response.getError();
+                if (errors) {
+                    if (errors[0] && errors[0].message) {
+                        console.log("Error message: " + 
+                                    errors[0].message);
+                    }
+                } else {
+                    console.log("Unknown error");
+                }
+            }
+        });
+        $A.enqueueAction(action);
     }
 })
