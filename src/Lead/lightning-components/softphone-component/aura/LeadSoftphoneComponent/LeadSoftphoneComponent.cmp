@@ -39,7 +39,8 @@
     <aura:attribute name="enrollmentOnFlag" type="Boolean" default="false"/>
     <aura:attribute name="enrollmentCallFlag" type="Boolean" default="false"/>
     <aura:attribute name="callFinished" type="Boolean" default="true"/>
-    
+    <aura:attribute name="defaultDispStatus" type="Boolean" default="false"/>
+    <aura:attribute name="prevStatus" type="String" default="Offline - Manual Dialing"/>
     
     <lightning:utilityBarAPI aura:id="utilitybar" />
     <lightning:omniToolkitAPI aura:id="omniToolkit" />

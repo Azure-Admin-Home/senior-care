@@ -311,6 +311,10 @@
                 component.set("v.outboundOnlyFlag",false);
             }
         });
+
+        helper.createLogCallForDefaultDispositionStatuses(component);
+        helper.checkIfSelectedStatusDefaultDisposition(component, selectedStatus);
+        component.set("v.prevStatus", selectedStatus);
     },
     handleDispostionChange : function(component, event, helper) {
        var selectedValue = event.getSource().get("v.value");
