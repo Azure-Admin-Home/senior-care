@@ -467,6 +467,7 @@
         var isLead = false;
         var mainResp = {};
         component.set("v.nextCallFlag",true);
+        component.set("v.callFinished", false);
         if(lead)
         {
             var callNotes = component.get("v.callNotes");

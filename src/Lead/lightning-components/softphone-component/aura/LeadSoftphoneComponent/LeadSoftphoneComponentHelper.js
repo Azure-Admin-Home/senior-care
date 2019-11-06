@@ -1088,6 +1088,8 @@
     },
     handleOutboundOnly : function(component,event,authKey)
     {
+        console.log("CHECK callFinished", component.get("v.callFinished"));
+        component.set("v.callFinished",false);
         var omniAPI = component.find("omniToolkit");
         var statusString = $A.get("$Label.c.Status_Json");
         var statusList = JSON.parse(statusString);
