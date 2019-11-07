@@ -54,7 +54,7 @@
         <language>en_US</language>
         <protected>false</protected>
         <shortDescription>Disposition List</shortDescription>
-        <value>AEP Callback,Caller Disconnected - HANGUP,Committed Enrollment Customer to Callback,Current Member,Deceased,Do Not Call,Does Not Reside In Service Area,Enrollment - New Single,Escalated Call,Follow up - Agent Owned,Ghost Call,Language Barrier,MISC - Hang-up,No Answer,No Plans in Area - AEP Call back,NO Plans in Area - Bad Lead,Not Available,Not Eligible,Not Eligible - No SEP,Not Interested,Not interested - Benefits,Not Interested - Drugs not covered,Not Interested - Group/Union Coverage,Not interested - PCP not in network,Not Interested - Premium,Not Interested - TriCare,Post Enrollment,Skip Lead - NRTS (Not Ready To Sell),Skip Lead - Other,Transfer to RTS Agent,Unexpected Disconnection,Voicemail,Working with External Agent/Broker,Wrong Number</value>
+        <value>AEP Callback,Caller Disconnected - HANGUP,Committed Enrollment Customer to Callback,Current Member,Deceased,Do Not Call,Does Not Reside In Service Area,Enrollment - New Single,Escalated Call,Follow up - Agent Owned,Ghost Call,Language Barrier,MISC - Hang-up,No Answer,No Plans in Area - AEP Call back,NO Plans in Area - Bad Lead,Not Available,Not Eligible,Not Eligible - No SEP,Not Interested,Not interested - Benefits,Not Interested - Drugs not covered,Not Interested - Group/Union Coverage,Not interested - PCP not in network,Not Interested - Premium,Not Interested - TriCare,Post Enrollment,Skip Lead - NRTS (Not Ready To Sell),Skip Lead - Other,Transfer to RTS Agent,Unexpected Disconnection,Voicemail,Working with External Agent/Broker,Wrong Number,No Plans Available</value>
     </labels>
     <labels>
         <fullName>GetNailUp_API</fullName>
@@ -151,28 +151,28 @@
         <shortDescription>Status Json</shortDescription>
         <value>[
 {
-&quot;Id&quot;: &quot;0N53i0000008UyDCAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008UyD&quot;,
 &quot;MasterLabel&quot;: &quot;Break - 15 Minutes&quot;
 },
 
 {
-&quot;Id&quot;: &quot;0N53i0000008UvECAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008UvE&quot;,
 &quot;MasterLabel&quot;: &quot;Offline - Manual Dialing&quot;
 },
 {
-&quot;Id&quot;: &quot;0N53i0000008V1BCAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008V1B&quot;,
 &quot;MasterLabel&quot;: &quot;Inbound - Enrollment / Receive Transfer&quot;
 },
 {
-&quot;Id&quot;: &quot;0N53i0000008UvOCAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008UvO&quot;,
 &quot;MasterLabel&quot;: &quot;Wrap Up&quot;
 },
 {
-&quot;Id&quot;: &quot;0N53i0000008OcKCAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008OcK&quot;,
 &quot;MasterLabel&quot;: &quot;Online&quot;
 },
 {
-&quot;Id&quot;: &quot;0N53i0000008OcLCAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008OcL&quot;,
 &quot;MasterLabel&quot;: &quot;Online – Inbound Only&quot;
 },
 {
@@ -180,19 +180,19 @@
 &quot;MasterLabel&quot;: &quot;Online - Outbound Calls Only&quot;
 },
 {
-&quot;Id&quot;: &quot;0N53i0000008OcMCAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008OcM&quot;,
 &quot;MasterLabel&quot;: &quot;Break&quot;
 },
 {
-&quot;Id&quot;: &quot;0N53i0000008OcOCAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008OcO&quot;,
 &quot;MasterLabel&quot;: &quot;Lunch&quot;
 },
 {
-&quot;Id&quot;: &quot;0N53i0000008OcNCAU&quot;,
+&quot;Id&quot;: &quot;0N53i0000008OcN&quot;,
 &quot;MasterLabel&quot;: &quot;Off Phones - Training&quot;
 },
 {
-&quot;Id&quot;: &quot;0N53i0000008Uv9CAE&quot;,
+&quot;Id&quot;: &quot;0N53i0000008Uv9&quot;,
 &quot;MasterLabel&quot;: &quot;Off Phones - Meeting&quot;
 }
 ]</value>
