@@ -307,6 +307,7 @@
                             $A.getCallback(function() {
                                 var statusString = $A.get("$Label.c.Status_Json");
                                 component.set("v.callFinished",false);
+                                component.set("v.dispositionValue","");
                                 var statusList = JSON.parse(statusString);
                                 statusList.forEach(function(status){
                                     if(status.MasterLabel === 'Online'){
@@ -813,6 +814,7 @@
                             $A.getCallback(function() {
                                 var statusString = $A.get("$Label.c.Status_Json");
                                 component.set("v.callFinished",false);
+                                component.set("v.dispositionValue","");
                                 var statusList = JSON.parse(statusString);
                                 statusList.forEach(function(status){
                                     if(status.MasterLabel === 'Online'){
