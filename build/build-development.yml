@@ -58,3 +58,4 @@ stages:
         echo rm -rf $(build.path)
         rm -rf $(build.path)
       displayName: 'Clear Cache'
+      condition: always()
