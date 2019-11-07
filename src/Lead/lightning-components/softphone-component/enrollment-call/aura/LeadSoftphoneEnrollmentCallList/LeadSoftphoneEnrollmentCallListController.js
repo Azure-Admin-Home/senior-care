@@ -1,10 +1,10 @@
 ({
     init: function (component, event, helper) {
         helper.getCalls(component);
-        // var intId = setInterval(() => {
-        //     helper.getCalls(component);
-        // }, 2000);
-        // component.set("v.intId", intId);
+        var intId = setInterval(() => {
+            helper.getCalls(component);
+        }, 5000);
+        component.set("v.intId", intId);
     },
 
     updateCallsQueue: function (component, event, helper) {
