@@ -1266,8 +1266,8 @@
     },
 
     populateDefaultDisposition : function(component){
-        const disposition = component.get("v.dispositionValue");
-        const isDispositionNotSelected = this.checkIfDispositionNotSelected(disposition);
+        const dispositionDupValue = component.get("v.dispositionDupValue");
+        const isDispositionNotSelected = this.checkIfDispositionNotSelected(dispositionDupValue);
         if(isDispositionNotSelected){
             const defaultLog = this.createDefaultLog(component);
             this.saveDefaultLog(component, defaultLog);
@@ -1326,5 +1326,13 @@
             }
         });
         $A.enqueueAction(action);
+    },
+
+    resetDispositionDupValue : function(component){
+        component.set("v.dispositionDupValue", "");
+    },
+
+    resetDispositionValue : function(component){
+        component.set("v.dispositionValue","");
     }
 })
