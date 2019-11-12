@@ -1,0 +1,6 @@
+<aura:component controller="LeadSoftphoneMatchingLeads_ctl">
+    <aura:attribute name="phone" type="String" />
+    <aura:attribute name="leads" type="List" />
+    <aura:handler name="init" value="{!this}" action="{!c.init}" />
+    
+</aura:component>
