@@ -416,6 +416,7 @@
             );
             helper.handleInboundCall(component,event,authKey);
         }
+        helper.resetDispositionDupValue(component);
     },
     handleInputOnlyNextCall  : function(component,event,helper){
         var authKey = component.get("v.authKey");
@@ -463,6 +464,7 @@
         {
             helper.handleInboundOnly(component,event,authKey);
         }
+        helper.resetDispositionDupValue(component);
     },
     handleOutboundOnlyNextCall : function(component,event,helper){
         var authKey = component.get("v.authKey");
@@ -507,6 +509,7 @@
             var respJson = JSON.stringify(mainResp);
             helper.callerMethod(component,event,respJson,lead);
         }
+        helper.resetDispositionDupValue(component);
     },
     callNextCall : function(component,event,helper){
         var authKey = component.get("v.authKey");
