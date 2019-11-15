@@ -639,5 +639,20 @@
         component.set("v.leadInputModalBox",false);
         component.set("v.leadFirstName","");
         component.set("v.leadLastName","");
+    },
+    handleSelectMatchingLead : function(component,event,helper){
+        debugger;
+        component.set("v.openSelectLeadModal", false);
+        const leadId = event.getParam("leadId");
+        const leadPhoneNumber = component.get("v.inboundCallPhone");
+        component.set("v.inboundCallPhone", "");
+        const isLeadSelected = (leadId !== null)&&(leadId !== undefined);
+        if(isLeadSelected){
+            helper.resetDispositionValue(component);
+            helper.resetDispositionDupValue(component);
+            helper.getLead(component,event,leadId);
+        } else {
+            helper.openCreateLeadModalWindow(component, leadPhoneNumber);
+        }
     }
 })
