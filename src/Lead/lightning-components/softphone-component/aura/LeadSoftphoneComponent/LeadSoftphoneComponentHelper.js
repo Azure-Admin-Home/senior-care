@@ -222,7 +222,8 @@
                 var resp = response.getReturnValue();
                 if(resp.isSucess)
                 {
-                    console.log('Inbound call is going on.')
+										console.log('Inbound call is going on.');
+										this.triggerSoundEvent(component);
                     component.set("v.lead","");
                     component.set("v.isLeadFlag",false);
                     component.set("v.HideSpinner", false);
@@ -233,7 +234,7 @@
                     component.set("v.leadInputModalBox",true);
                     component.set("v.callFinished",false);
                     component.set("v.dispositionValue","");
-                    component.set("v.authKey",resp.authKey);
+										component.set("v.authKey",resp.authKey);
                 }
             /*    else if(omniOnlineFlag == true)
                 {
@@ -702,6 +703,7 @@
                 var resp = response.getReturnValue();
                 if(resp.isSucess)
                 {
+										this.triggerSoundEvent(component);
                     component.set("v.HideSpinner", false);
                     component.set("v.onlineFLag",true);
                     component.set("v.lead","");
@@ -714,7 +716,7 @@
                     component.set("v.dispositionValue","");
                     component.find("callNotes").set("v.value","");
                     component.find("followupTaskNotes").set("v.value","");
-                    component.find("dueDate").set("v.value","");
+										component.find("dueDate").set("v.value","");
                 }
                /* else if(lead.Inbound_Outbound__c !== 'Inbound')
                 {
@@ -976,7 +978,8 @@
             var resp = response.getReturnValue();
             if(resp.isSucess)
             {
-                console.log('Inbound call is going on.')
+								console.log('Inbound call is going on.');
+								this.triggerSoundEvent(component);
                 component.set("v.lead","");
                 component.set("v.isLeadFlag",false);
                 component.set("v.onlineFLag",true);
@@ -986,7 +989,7 @@
                 component.set("v.callerId",resp.callerMobileNumber);
                 component.set("v.leadInputModalBox",true);
                 component.set("v.callFinished",false);
-                component.set("v.dispositionValue","");
+								component.set("v.dispositionValue","");
             }
             else
             {
@@ -1334,5 +1337,12 @@
 
     resetDispositionValue : function(component){
         component.set("v.dispositionValue","");
-    }
+		},
+		
+		triggerSoundEvent : function(component) {
+				component.set('v.playSound', true);
+				setTimeout(function() {
+						component.set('v.playSound', false);
+				}, 1000);
+		}
 })
