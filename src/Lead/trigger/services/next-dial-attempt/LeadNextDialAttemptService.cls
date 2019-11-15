@@ -3,6 +3,8 @@ public class LeadNextDialAttemptService
 
 public static void execute()
 {
+	Organization org = [SELECT Id, TimeZoneSidKey FROM Organization];
+	Timezone tz = Timezone.getTimeZone(org.TimeZoneSidKey);
 
 	for (Lead lead :(List<Lead>)Trigger.new)
 	{
@@ -12,68 +14,47 @@ public static void execute()
 		}
 
 		DateTime nextDialAttempt;
-		DateTime lastDialAttempt = getLastDialAttempt(lead);
+		DateTime firstDialTime = DateTime.newInstanceGMT(System.today(), lead.First_Dial_Time__c).addMinutes(5);
+		DateTime lastDialTime = DateTime.newInstanceGMT(System.today(), lead.Last_Dial_Time__c);
+		System.debug(firstDialTime);
+		System.debug(tz.getOffset(firstDialTime));
+		System.debug(tz.getOffset(firstDialTime)/60000);
+		firstDialTime = firstDialTime.addMinutes(-tz.getOffset(firstDialTime)/60000);
+		lastDialTime = lastDialTime.addMinutes(-tz.getOffset(lastDialTime)/60000);
 
-		if (lead.Dials_Remaining__c > 0)
+		System.debug('firstDialTime::'+firstDialTime);
+		System.debug('lastDialTime::'+lastDialTime);
+		System.debug('Now::'+System.now());
+		if (lead.Last_Dial_Attempt__c != null)
 		{
-			if (lastDialAttempt.date() < System.today())
+			if (lead.Dials_Remaining__c > 0)
 			{
-				nextDialAttempt = DateTime.newInstance(System.today(), lead.First_Dial_Time__c).addMinutes(5);
-			}
-			else
+				DateTime nextTime = lead.Last_Dial_Attempt__c.addHours(Integer.valueOf(lead.Daily_Call_Rest_Time__c));
+				if (nextTime < System.now()) nextTime = System.now().addMinutes(5);
+				if (nextTime < firstDialTime) nextTime = firstDialTime;
+				if (nextTime > lastDialTime) nextTime = firstDialTime.addDays(1);
+				nextDialAttempt = nextTime;
+			} else
 			{
-				DateTime startDate = DateTime.newInstance(System.today(), lead.First_Dial_Time__c).addMinutes(5);
-				DateTime restTime = lastDialAttempt.addHours(Integer.valueOf(lead.Daily_Call_Rest_Time__c));
-				DateTime nextTime = System.now().addMinutes(5);
-				if (startDate > System.now())
-				{
-					nextDialAttempt = startDate;
-				}
-				else if (lead.Dial_Attempts_Today__c == 0)
-				{
-					nextDialAttempt = nextTime;
-				}
-				else {
-					nextDialAttempt = restTime;
-				}
+				DateTime nextTime = firstDialTime.addDays(1);
+				nextDialAttempt = nextTime;
 			}
-			if (nextDialAttempt < System.now()) nextDialAttempt = System.now().addMinutes(5);
+		} else
+		{
+			DateTime nextTime = System.now().addMinutes(5);
+			if (nextTime < firstDialTime) nextTime = firstDialTime;
+			if (nextTime > lastDialTime) nextTime = firstDialTime.addDays(1);
+			nextDialAttempt = nextTime;
 		}
-		if (isNotWorkingHours(lead, nextDialAttempt) || lead.Dials_Remaining__c <= 0)
+
+		if (System.now() < nextDialAttempt.addMinutes(-20) )
 		{
-			nextDialAttempt = moveNextDay(lead);
 			Group hopper = GroupUtils.getGroup('Hopper');
 			if (lead.OwnerId == hopper.Id) lead.OwnerId = GroupUtils.getGroup('Unassigned').Id;
 		}
+		System.debug('nextDialAttempt::'+nextDialAttempt);
 		lead.Next_Dial_Attempt__c = nextDialAttempt;
 	}
-}
-
-private static Boolean isNotWorkingHours(Lead lead, DateTime nextDialAttempt)
-{
-	if (nextDialAttempt == null ||
-	    nextDialAttempt < System.now() ||
-	    nextDialAttempt > DateTime.newInstance(nextDialAttempt.date(), lead.Last_Dial_Time__c))
-	{
-		return true;
-	}
-	else
-	{
-		return false;
-	}
-}
-
-private static DateTime moveNextDay(Lead lead)
-{
-	return DateTime.newInstance(System.today().addDays(1), lead.First_Dial_Time__c);
-}
-
-private static DateTime getLastDialAttempt(Lead lead)
-{
-	if (lead.Last_Dial_Attempt__c != null) return lead.Last_Dial_Attempt__c;
-	DateTime result = DateTime.newInstance(System.today(), lead.First_Dial_Time__c);
-	if (result > System.now()) result = DateTime.newInstance(System.today().addDays(-1), lead.Last_Dial_Time__c);
-	return result;
 }
 
 }

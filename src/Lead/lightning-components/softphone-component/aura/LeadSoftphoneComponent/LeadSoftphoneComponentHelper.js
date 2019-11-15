@@ -222,6 +222,7 @@
                 var resp = response.getReturnValue();
                 if(resp.isSucess)
                 {
+                    this.triggerSoundEvent(component);
                     this.checkIfInboundMatchingLeadExists(component, resp);
                 }
             /*    else if(omniOnlineFlag == true)
@@ -714,7 +715,8 @@
                 var resp = response.getReturnValue();
                 if(resp.isSucess)
                 {
-                    this.checkIfInboundNextMatchingLeadExists(component, resp);
+                  this.triggerSoundEvent(component);  
+                  this.checkIfInboundNextMatchingLeadExists(component, resp);
                 }
                /* else if(lead.Inbound_Outbound__c !== 'Inbound')
                 {
@@ -1040,7 +1042,8 @@
             var resp = response.getReturnValue();
             if(resp.isSucess)
             {
-                console.log('Inbound call is going on.')
+								console.log('Inbound call is going on.');
+								this.triggerSoundEvent(component);
                 component.set("v.lead","");
                 component.set("v.isLeadFlag",false);
                 component.set("v.onlineFLag",true);
@@ -1050,7 +1053,7 @@
                 component.set("v.callerId",resp.callerMobileNumber);
                 component.set("v.leadInputModalBox",true);
                 component.set("v.callFinished",false);
-                component.set("v.dispositionValue","");
+								component.set("v.dispositionValue","");
             }
             else
             {
@@ -1447,5 +1450,12 @@
         component.set("v.leadInputModalBox",true);
         component.set("v.callFinished",false);
         component.set("v.dispositionValue","");
-    }
+		},
+		
+		triggerSoundEvent : function(component) {
+				component.set('v.playSound', true);
+				setTimeout(function() {
+						component.set('v.playSound', false);
+				}, 1000);
+		}
 })
