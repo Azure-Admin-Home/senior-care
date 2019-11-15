@@ -40,6 +40,11 @@
     <aura:attribute name="enrollmentCallFlag" type="Boolean" default="false"/>
     <aura:attribute name="callFinished" type="Boolean" default="true"/>
     <aura:attribute name="defaultDispStatus" type="Boolean" default="false"/>
+    <aura:attribute name="openSelectLeadModal" type="Boolean" default="false"/>
+    <aura:attribute name="openSelectInboundLeadModal" type="Boolean" default="false"/>
+    <aura:attribute name="openSelectNextInboundLeadModal" type="Boolean" default="false"/>
+    <aura:attribute name="inboundOnlyCallPhone" type="String"/>
+    <aura:attribute name="inboundLeadResponse" type="Object"/>
 		<aura:attribute name="prevStatus" type="String" default="Offline - Manual Dialing"/>
 		<aura:attribute name="playSound" type="Boolean" default="false"/>
     
@@ -47,7 +52,8 @@
     <lightning:omniToolkitAPI aura:id="omniToolkit" />
     <lightning:workspaceAPI aura:id="workspace" />
     
-     <aura:handler event="c:LeadSoftphoneCallToLead" name="callToLead" action="{! c.handleEnrollmentCall }"/> 
+    <aura:handler event="c:LeadSoftphoneCallToLead" name="callToLead" action="{! c.handleEnrollmentCall }"/> 
+    <aura:handler event="c:LeadSoftphoneSelectMatchingLead" name="selectMatchingLead" action="{! c.handleSelectMatchingLead }"/> 
     <aura:handler event="lightning:omniChannelStatusChanged" action="{! c.onStatusChanged }"/>
     <aura:handler event="lightning:omniChannelWorkAssigned" action="{!c.onWorkAssigned}"/>
     <aura:handler event="lightning:omniChannelLogout" action="{!c.handleOmniLogOut}"/>
@@ -210,7 +216,16 @@
                     <lightning:button class="slds-size_6-of-12" label="Cancel Transfer" title="Cancel Transfer" onclick="{!c.handleCancelTransferAPI}"/>
                 </div>
             </aura:if>
-        </aura:if>  
+        </aura:if>
+        <aura:if isTrue="{!v.openSelectLeadModal}">
+            <c:LeadSoftphoneMatchingLeads phone="{!v.inboundCallPhone}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.openSelectInboundLeadModal}">
+            <c:LeadSoftphoneMatchingLeads phone="{!v.inboundLeadResponse.callerMobileNumber}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.openSelectNextInboundLeadModal}">
+            <c:LeadSoftphoneMatchingLeads phone="{!v.inboundLeadResponse.callerMobileNumber}"/>
+        </aura:if>    
         <aura:if isTrue="{!v.openTransferCallModal}">
             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">

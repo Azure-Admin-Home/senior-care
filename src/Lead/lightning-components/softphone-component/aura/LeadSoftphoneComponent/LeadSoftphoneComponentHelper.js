@@ -222,19 +222,8 @@
                 var resp = response.getReturnValue();
                 if(resp.isSucess)
                 {
-										console.log('Inbound call is going on.');
-										this.triggerSoundEvent(component);
-                    component.set("v.lead","");
-                    component.set("v.isLeadFlag",false);
-                    component.set("v.HideSpinner", false);
-                    component.set("v.onlineFLag",true);
-                    component.set("v.leadFirstName","");
-                    component.set("v.leadLastName","");
-                    component.set("v.callerId",resp.callerMobileNumber);
-                    component.set("v.leadInputModalBox",true);
-                    component.set("v.callFinished",false);
-                    component.set("v.dispositionValue","");
-										component.set("v.authKey",resp.authKey);
+                    this.triggerSoundEvent(component);
+                    this.checkIfInboundMatchingLeadExists(component, resp);
                 }
             /*    else if(omniOnlineFlag == true)
                 {
@@ -345,6 +334,29 @@
             }
         });
         $A.enqueueAction(action);  
+    },
+    checkIfInboundMatchingLeadExists : function(component, resp){
+        const phoneNumber = resp.callerMobileNumber;
+        const action = component.get("c.checkIfMatchingLeadExists");
+        action.setParams({"phoneNumber": phoneNumber});
+        action.setCallback(this, response => {
+            const state = response.getState();
+            if(state === "SUCCESS"){
+                this.callConnected(component);
+                const isMatchingLeadExists = response.getReturnValue();
+                if(isMatchingLeadExists){
+                    component.set("v.inboundLeadResponse", resp);
+                    component.set("v.openSelectInboundLeadModal", true);
+                } else {
+                    this.openCreateInboundLeadModalWindow(component, resp);
+                }
+            } else if(state === "INCOMPLETE"){
+                console.log("Incomplete state");
+            } else if(state === "ERROR") {
+                console.log("Error message: " + errors[0].message);
+            }
+        });
+        $A.enqueueAction(action);
     },
     getLead : function(component,event,leadId)
     {
@@ -703,20 +715,8 @@
                 var resp = response.getReturnValue();
                 if(resp.isSucess)
                 {
-										this.triggerSoundEvent(component);
-                    component.set("v.HideSpinner", false);
-                    component.set("v.onlineFLag",true);
-                    component.set("v.lead","");
-                    component.set("v.isLeadFlag",false);
-                    component.set("v.leadFirstName","");
-                    component.set("v.leadLastName","");
-                    component.set("v.callerId",resp.callerMobileNumber);
-                    component.set("v.leadInputModalBox",true);
-                    component.set("v.callFinished",false);
-                    component.set("v.dispositionValue","");
-                    component.find("callNotes").set("v.value","");
-                    component.find("followupTaskNotes").set("v.value","");
-										component.find("dueDate").set("v.value","");
+                  this.triggerSoundEvent(component);  
+                  this.checkIfInboundNextMatchingLeadExists(component, resp);
                 }
                /* else if(lead.Inbound_Outbound__c !== 'Inbound')
                 {
@@ -849,6 +849,29 @@
         });
         $A.enqueueAction(action);  
     },
+    checkIfInboundNextMatchingLeadExists : function(component, resp){
+        const phoneNumber = resp.callerMobileNumber;
+        const action = component.get("c.checkIfMatchingLeadExists");
+        action.setParams({"phoneNumber": phoneNumber});
+        action.setCallback(this, response => {
+            const state = response.getState();
+            if(state === "SUCCESS"){
+                this.callConnected(component);
+                const isMatchingLeadExists = response.getReturnValue();
+                if(isMatchingLeadExists){
+                    component.set("v.inboundLeadResponse", resp);
+                    component.set("v.openSelectNextInboundLeadModal", true);
+                } else {
+                    this.openCreateNextInboundLeadModalWindow(component, resp);
+                }
+            } else if(state === "INCOMPLETE"){
+                console.log("Incomplete state");
+            } else if(state === "ERROR") {
+                console.log("Error message: " + errors[0].message);
+            }
+        });
+        $A.enqueueAction(action);
+    },
     handlelMergeCall : function(component,event,authKey,mode)
     {
         var action = component.get("c.holdCallApi");
@@ -966,14 +989,55 @@
         action.setParams({auth_key : authKey});
         action.setCallback(this, function(response) {
             // const self= this;
-            this.handleNextCallAPIResponse(component,event,authKey,response);
+            this.isInboundOnlyMatchingLeadExists(component,event,authKey,response);
+            // this.handleNextCallAPIResponse(component,event,authKey,response);
         });
         $A.enqueueAction(action);
     },
+
+    isInboundOnlyMatchingLeadExists : function(component,event,authKey,response){
+        const state = response.getState();
+        if(state === "SUCCESS"){
+            this.callConnected(component);
+            const resp = response.getReturnValue();
+            
+            if(resp.isSucess){
+                const phoneNumber = resp.callerMobileNumber;
+                this.checkIfInboundOnlyMatchingLeadExists(component, phoneNumber);
+            } else {
+                this.handleNextCallAPIResponse(component,event,authKey,response);
+            }
+        } else {
+            this.handleNextCallAPIResponse(component,event,authKey,response);
+        }
+    },
+
+    checkIfInboundOnlyMatchingLeadExists : function(component, phoneNumber){
+        const action = component.get("c.checkIfMatchingLeadExists");
+        action.setParams({"phoneNumber": phoneNumber});
+        action.setCallback(this, response => {
+            const state = response.getState();
+            if(state === "SUCCESS"){
+                const isMatchingLeadExists = response.getReturnValue();
+                if(isMatchingLeadExists){
+                    component.set("v.inboundOnlyCallPhone", phoneNumber);
+                    component.set("v.openSelectLeadModal", true);
+                } else {
+                    this.handleNextCallAPIResponse(component,event,authKey,response);
+                }
+            } else if(state === "INCOMPLETE"){
+                console.log("Incomplete state");
+            } else if(state === "ERROR") {
+                console.log("Error message: " + errors[0].message);
+            }
+        });
+        $A.enqueueAction(action);
+    },
+
     handleNextCallAPIResponse : function(component,event,authKey,response){
         var incomingOnlyFlag =  component.get("v.incomingOnlyFlag");
         var state = response.getState();
-        const  self= this;
+        const self= this;
         if (state === "SUCCESS") {
             var resp = response.getReturnValue();
             if(resp.isSucess)
@@ -1336,6 +1400,55 @@
     },
 
     resetDispositionValue : function(component){
+        component.set("v.dispositionValue","");
+    },
+
+    callConnected : function(component){
+        component.set("v.callFinished",false);
+    },
+
+    openCreateInboundLeadModalWindow : function(component, resp){
+        console.log('Inbound call is going on.')
+        component.set("v.lead","");
+        component.set("v.isLeadFlag",false);
+        component.set("v.HideSpinner", false);
+        component.set("v.onlineFLag",true);
+        component.set("v.leadFirstName","");
+        component.set("v.leadLastName","");
+        component.set("v.callerId",resp.callerMobileNumber);
+        component.set("v.leadInputModalBox",true);
+        component.set("v.callFinished",false);
+        component.set("v.dispositionValue","");
+        component.set("v.authKey",resp.authKey);
+    },
+
+    openCreateNextInboundLeadModalWindow : function(component, resp){
+        component.set("v.HideSpinner", false);
+        component.set("v.onlineFLag",true);
+        component.set("v.lead","");
+        component.set("v.isLeadFlag",false);
+        component.set("v.leadFirstName","");
+        component.set("v.leadLastName","");
+        component.set("v.callerId",resp.callerMobileNumber);
+        component.set("v.leadInputModalBox",true);
+        component.set("v.callFinished",false);
+        component.set("v.dispositionValue","");
+        component.find("callNotes").set("v.value","");
+        component.find("followupTaskNotes").set("v.value","");
+        component.find("dueDate").set("v.value","");
+    },
+
+    openCreateInboundOnlyLeadModalWindow : function(component, callerMobileNumber){
+        console.log('Inbound call is going on.')
+        component.set("v.lead","");
+        component.set("v.isLeadFlag",false);
+        component.set("v.onlineFLag",true);
+        component.set("v.HideSpinner", false);
+        component.set("v.leadFirstName","");
+        component.set("v.leadLastName","");
+        component.set("v.callerId",callerMobileNumber);
+        component.set("v.leadInputModalBox",true);
+        component.set("v.callFinished",false);
         component.set("v.dispositionValue","");
 		},
 		

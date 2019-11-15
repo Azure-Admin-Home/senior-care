@@ -1,0 +1,47 @@
+<aura:component controller="LeadSoftphoneMatchingLeads_ctl">
+    <aura:attribute name="phone" type="String"/>
+    <aura:attribute name="leads" type="List"/>
+    <aura:attribute name="errorResponse" type="String"/>
+    <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:registerEvent name="selectMatchingLead" type="c:LeadSoftphoneSelectMatchingLead"/>
+    <lightning:workspaceAPI aura:id="workspace"/>
+
+    <section role="dialog" tabindex="-1" aria-modal="true"  class="{!'slds-modal slds-fade-in-open'}">
+        <div class="slds-modal__container">
+            <lightning:buttonIcon iconName="utility:close" variant="container" onclick="{!c.handleCloseModal}" alternativeText="Close"/>
+
+            <header class="slds-modal__header">
+                <h2 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Leads, matching inbound number</h2>
+            </header>
+
+            <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                <aura:if isTrue="{!not(empty(v.leads))}">
+                        <aura:iteration items="{!v.leads}" var="lead">
+                            <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
+                                <div style="width: 100%; text-align:center; vertical-align: middle; line-height: 32px;">
+                                    {!lead.Name}
+                                </div>
+                                <lightning:button class="slds-size_6-of-12 slds-button slds-button_brand" 
+                                                  label="Select" 
+                                                  title="Select" 
+                                                  value="{!lead}"
+                                                  onclick="{!c.handleLeadSelect}" />
+                            </div>
+                        </aura:iteration>
+                    <aura:set attribute="else">
+                        <div>{!v.errorResponse}</div>
+                    </aura:set>
+                </aura:if>
+            </div>
+
+            <footer class="slds-modal__footer">
+                <lightning:button class="slds-button slds-button_brand" 
+                                  label="Create lead"
+                                  title="Close modal and go to new Lead creation"  
+                                  onclick="{!c.handleCloseModal}"/>
+            </footer>
+
+        </div>
+    </section>
+    <div class="{!'slds-backdrop slds-backdrop_open'}" onclick="{!c.handleCloseModal}" ></div>
+</aura:component>

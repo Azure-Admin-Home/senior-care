@@ -350,6 +350,13 @@ public class LeadSoftphoneComponent_ctl
             return new responseWrapper(false,e.getMessage());
         }
     }
+
+    @AuraEnabled
+    public static Boolean checkIfMatchingLeadExists(String phoneNumber){
+        Integer numberOfMatchingLeads = [SELECT COUNT() FROM Lead 
+                                         WHERE Phone = :phoneNumber OR MobilePhone = :phoneNumber];
+        return numberOfMatchingLeads > 0;
+    }
     // Wrapper class to get the task data
     public class wrapper{
         @AuraEnabled 

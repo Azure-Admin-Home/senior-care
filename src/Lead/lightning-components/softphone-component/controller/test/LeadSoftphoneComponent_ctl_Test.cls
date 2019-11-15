@@ -174,4 +174,11 @@ public class LeadSoftphoneComponent_ctl_Test {
         Boolean resp = LeadSoftphoneComponent_ctl.loadCallUuid('auth_key','uuid');
         test.stopTest();
     }
+    @isTest
+    public static void testCheckIfMatchingLeadExists()
+    {
+        test.startTest();
+        Boolean resp = LeadSoftphoneComponent_ctl.checkIfMatchingLeadExists('11111111');
+        test.stopTest();
+    }
 }
