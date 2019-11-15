@@ -40,7 +40,8 @@
     <aura:attribute name="enrollmentCallFlag" type="Boolean" default="false"/>
     <aura:attribute name="callFinished" type="Boolean" default="true"/>
     <aura:attribute name="defaultDispStatus" type="Boolean" default="false"/>
-    <aura:attribute name="prevStatus" type="String" default="Offline - Manual Dialing"/>
+		<aura:attribute name="prevStatus" type="String" default="Offline - Manual Dialing"/>
+		<aura:attribute name="playSound" type="Boolean" default="false"/>
     
     <lightning:utilityBarAPI aura:id="utilitybar" />
     <lightning:omniToolkitAPI aura:id="omniToolkit" />
@@ -285,6 +286,14 @@
             </section>
             <div class="slds-backdrop slds-backdrop_open"></div>
             <!--###### MODAL BOX Part END Here ######-->
-        </aura:if>
+				</aura:if>
+				
+				<!-- Sound notification -->
+				<aura:if isTrue="{!v.playSound}" >
+					<audio autoplay="true">
+							<source src='{!$Resource.AlertSound}' type='audio/mpeg'/>
+					</audio>
+			</aura:if>
+			
     </div>
 </aura:component>
