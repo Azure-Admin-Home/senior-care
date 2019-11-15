@@ -641,18 +641,31 @@
         component.set("v.leadLastName","");
     },
     handleSelectMatchingLead : function(component,event,helper){
-        debugger;
-        component.set("v.openSelectLeadModal", false);
         const leadId = event.getParam("leadId");
-        const leadPhoneNumber = component.get("v.inboundCallPhone");
-        component.set("v.inboundCallPhone", "");
+        const inboundOnlyCallPhone = component.get("v.inboundOnlyCallPhone");
+        const inboundLeadResponse = component.get("v.inboundLeadResponse");
+        
+        const inboundOnlyModal = component.get("v.openSelectLeadModal");
+        const inboundLeadModal = component.get("v.openSelectInboundLeadModal");
+
+        component.set("v.openSelectLeadModal", false);
+        component.set("v.openSelectInboundLeadModal", false);
+        component.set("v.openSelectNextInboundLeadModal", false);
+
         const isLeadSelected = (leadId !== null)&&(leadId !== undefined);
         if(isLeadSelected){
             helper.resetDispositionValue(component);
             helper.resetDispositionDupValue(component);
             helper.getLead(component,event,leadId);
+        } else if(inboundOnlyModal){
+            component.set("v.inboundOnlyCallPhone", "");
+            helper.openCreateInboundOnlyLeadModalWindow(component, inboundOnlyCallPhone);
+        } else if(inboundLeadModal){
+            component.set("v.inboundLeadResponse", null);
+            helper.openCreateInboundLeadModalWindow(component, inboundLeadResponse);
         } else {
-            helper.openCreateLeadModalWindow(component, leadPhoneNumber);
+            component.set("v.inboundLeadResponse", null);
+            helper.openCreateNextInboundLeadModalWindow(component, inboundLeadResponse);
         }
     }
 })

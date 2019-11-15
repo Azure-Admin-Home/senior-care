@@ -42,7 +42,10 @@
     <aura:attribute name="defaultDispStatus" type="Boolean" default="false"/>
     <aura:attribute name="prevStatus" type="String" default="Offline - Manual Dialing"/>
     <aura:attribute name="openSelectLeadModal" type="Boolean" default="false"/>
-    <aura:attribute name="inboundCallPhone" type="String"/>
+    <aura:attribute name="openSelectInboundLeadModal" type="Boolean" default="false"/>
+    <aura:attribute name="openSelectNextInboundLeadModal" type="Boolean" default="false"/>
+    <aura:attribute name="inboundOnlyCallPhone" type="String"/>
+    <aura:attribute name="inboundLeadResponse" type="Object"/>
     
     <lightning:utilityBarAPI aura:id="utilitybar" />
     <lightning:omniToolkitAPI aura:id="omniToolkit" />
@@ -215,7 +218,13 @@
         </aura:if>
         <aura:if isTrue="{!v.openSelectLeadModal}">
             <c:LeadSoftphoneMatchingLeads phone="{!v.inboundCallPhone}"/>
-        </aura:if>  
+        </aura:if>
+        <aura:if isTrue="{!v.openSelectInboundLeadModal}">
+            <c:LeadSoftphoneMatchingLeads phone="{!v.inboundLeadResponse.callerMobileNumber}"/>
+        </aura:if>
+        <aura:if isTrue="{!v.openSelectNextInboundLeadModal}">
+            <c:LeadSoftphoneMatchingLeads phone="{!v.inboundLeadResponse.callerMobileNumber}"/>
+        </aura:if>    
         <aura:if isTrue="{!v.openTransferCallModal}">
             <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
                 <div class="slds-modal__container">
