@@ -998,6 +998,7 @@
     isInboundOnlyMatchingLeadExists : function(component,event,authKey,response){
         const state = response.getState();
         if(state === "SUCCESS"){
+            this.triggerSoundEvent(component);
             this.callConnected(component);
             const resp = response.getReturnValue();
             
@@ -1042,8 +1043,7 @@
             var resp = response.getReturnValue();
             if(resp.isSucess)
             {
-								console.log('Inbound call is going on.');
-								this.triggerSoundEvent(component);
+				console.log('Inbound call is going on.');
                 component.set("v.lead","");
                 component.set("v.isLeadFlag",false);
                 component.set("v.onlineFLag",true);
