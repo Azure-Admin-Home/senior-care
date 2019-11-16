@@ -1,6 +1,7 @@
 <aura:component controller="LeadSoftphoneMatchingLeads_ctl">
     <aura:attribute name="phone" type="String"/>
-    <aura:attribute name="leads" type="List"/>
+    <aura:attribute name="leadOptions" type="List"/>
+    <aura:attribute name="selectedLeadId" type="String"/>
     <aura:attribute name="errorResponse" type="String"/>
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
     <aura:registerEvent name="selectMatchingLead" type="c:LeadSoftphoneSelectMatchingLead"/>
@@ -15,19 +16,11 @@
             </header>
 
             <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
-                <aura:if isTrue="{!not(empty(v.leads))}">
-                        <aura:iteration items="{!v.leads}" var="lead">
-                            <div class="slds-grid slds-size_12-of-12 slds-p-top_x-small slds-p-right_x-small">
-                                <div style="width: 100%; text-align:center; vertical-align: middle; line-height: 32px;">
-                                    {!lead.Name}
-                                </div>
-                                <lightning:button class="slds-size_6-of-12 slds-button slds-button_brand" 
-                                                  label="Select" 
-                                                  title="Select" 
-                                                  value="{!lead}"
-                                                  onclick="{!c.handleLeadSelect}" />
-                            </div>
-                        </aura:iteration>
+                <aura:if isTrue="{!not(empty(v.leadOptions))}">
+                        <lightning:radioGroup name="leadGroup"
+                                              label="Matching Leads Group"
+                                              options="{!v.leadOptions}"
+                                              onchange="{!c.handleLeadChange}"/>
                     <aura:set attribute="else">
                         <div>{!v.errorResponse}</div>
                     </aura:set>
@@ -35,10 +28,14 @@
             </div>
 
             <footer class="slds-modal__footer">
-                <lightning:button class="slds-button slds-button_brand" 
+                <lightning:button class="slds-button slds-button_outline-brand" 
                                   label="Create lead"
                                   title="Close modal and go to new Lead creation"  
                                   onclick="{!c.handleCloseModal}"/>
+                <lightning:button class="slds-button slds-button_brand" 
+                                  label="Select lead"
+                                  title="Close modal and display selected lead information"  
+                                  onclick="{!c.handleLeadSelect}"/>
             </footer>
 
         </div>

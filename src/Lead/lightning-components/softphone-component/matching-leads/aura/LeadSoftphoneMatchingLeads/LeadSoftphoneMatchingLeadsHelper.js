@@ -1,12 +1,24 @@
 ({
     proceedInitSuccessResponse : function(response) {
         const leads = response.getReturnValue();
+        
         if(leads.length > 0){
+            const leadOptions = this.convertLeadsToOptions(leads);
             return {"success": true,
-                    "leads": leads};
+                    "leadOptions": leadOptions};
         } else {
             return {"success": false};
         }
+    },
+
+    convertLeadsToOptions : function(leads){
+        const leadOptions = [];
+        leads.forEach(lead => {
+            const leadOption = {"label": lead.Name,
+                                "value": lead.Id};
+            leadOptions.push(leadOption);
+        });
+        return leadOptions;
     },
 
     proceedInitErrorResponse : function(response) {

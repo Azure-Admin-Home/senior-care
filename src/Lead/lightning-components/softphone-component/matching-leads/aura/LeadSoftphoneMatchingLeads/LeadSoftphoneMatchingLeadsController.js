@@ -8,8 +8,8 @@
             if(state === "SUCCESS"){
                 const proceedResponse = helper.proceedInitSuccessResponse(response);
                 if(proceedResponse.success){
-                    const leads = proceedResponse.leads;
-                    component.set("v.leads", leads);
+                    const leadOptions = proceedResponse.leadOptions;
+                    component.set("v.leadOptions", leadOptions);
                 } else {
                     const error = "Unexpected error occurs. Please, contact developer support";
                     component.set("v.errorResponse", error); 
@@ -22,13 +22,15 @@
         $A.enqueueAction(action);
     },
 
-    handleLeadSelect : function(component, event, helper) {
-        const lead = event.getSource().get("v.value");
-        const leadId = lead.Id;
-        //const phoneNumber = component.get("v.phone");
-        //const selectedLead = helper.generateSelectedLead(leadId, phoneNumber);
+    handleLeadChange : function(component, event, helper){
+        const leadId = event.getParam("value");
+        component.set("v.selectedLeadId", leadId);
         const workspaceAPI = component.find("workspace");
         helper.openSelectedLeadTab(leadId, workspaceAPI);
+    },
+
+    handleLeadSelect : function(component, event, helper) {
+        const leadId = component.get("v.selectedLeadId");
         const selectLeadEvent = component.getEvent("selectMatchingLead");
         selectLeadEvent.setParams({"leadId": leadId});
         selectLeadEvent.fire();
