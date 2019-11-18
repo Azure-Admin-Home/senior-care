@@ -1450,12 +1450,25 @@
         component.set("v.leadInputModalBox",true);
         component.set("v.callFinished",false);
         component.set("v.dispositionValue","");
-		},
-		
-		triggerSoundEvent : function(component) {
-				component.set('v.playSound', true);
-				setTimeout(function() {
-						component.set('v.playSound', false);
-				}, 1000);
-		}
+	},
+	
+	triggerSoundEvent : function(component) {
+		component.set('v.playSound', true);
+		setTimeout(() => {
+				component.set('v.playSound', false);
+		}, 1000);
+    },
+    
+    openSelectedLeadInfoInDialer : function(component, selectedLead){
+        component.set("v.HideSpinner", false);
+        component.set("v.onlineFLag", true);
+        component.set("v.lead", selectedLead);
+        if(selectedLead.Phone !== '' || selectedLead.Phone != undefined || selectedLead.Phone != null)
+        {
+            component.set("v.callerId",selectedLead.Phone);
+        }else{
+            component.set("v.callerId",selectedLead.MobilePhone);
+        }   
+        component.set("v.isLeadFlag",true);
+    }
 })
