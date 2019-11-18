@@ -641,7 +641,7 @@
         component.set("v.leadLastName","");
     },
     handleSelectMatchingLead : function(component,event,helper){
-        const leadId = event.getParam("leadId");
+        const selectedLead = event.getParam("lead");
         const inboundOnlyCallPhone = component.get("v.inboundOnlyCallPhone");
         const inboundLeadResponse = component.get("v.inboundLeadResponse");
         
@@ -652,11 +652,11 @@
         component.set("v.openSelectInboundLeadModal", false);
         component.set("v.openSelectNextInboundLeadModal", false);
 
-        const isLeadSelected = (leadId !== null)&&(leadId !== undefined);
+        const isLeadSelected = (selectedLead !== null)&&(selectedLead !== undefined);
         if(isLeadSelected){
             helper.resetDispositionValue(component);
             helper.resetDispositionDupValue(component);
-            helper.getLead(component,event,leadId);
+            helper.openSelectedLeadInfoInDialer(component, selectedLead);
         } else if(inboundOnlyModal){
             component.set("v.inboundOnlyCallPhone", "");
             helper.openCreateInboundOnlyLeadModalWindow(component, inboundOnlyCallPhone);
