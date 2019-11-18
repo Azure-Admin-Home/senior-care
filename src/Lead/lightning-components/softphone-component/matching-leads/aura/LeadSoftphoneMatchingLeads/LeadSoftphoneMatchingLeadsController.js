@@ -4,7 +4,6 @@
         const action = component.get("c.getMatchingLeads");
         action.setParams({"phoneNumber": phoneNumber});
         action.setCallback(this, response => {
-            debugger;
             const state = response.getState();
             if(state === "SUCCESS"){
                 const proceedResponse = helper.proceedInitSuccessResponse(response);
