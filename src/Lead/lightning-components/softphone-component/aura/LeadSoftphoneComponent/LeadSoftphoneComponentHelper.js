@@ -1004,7 +1004,7 @@
             
             if(resp.isSucess){
                 const phoneNumber = resp.callerMobileNumber;
-                this.checkIfInboundOnlyMatchingLeadExists(component, phoneNumber);
+                this.checkIfInboundOnlyMatchingLeadExists(component, phoneNumber, event, authKey, response);
             } else {
                 this.handleNextCallAPIResponse(component,event,authKey,response);
             }
@@ -1013,7 +1013,7 @@
         }
     },
 
-    checkIfInboundOnlyMatchingLeadExists : function(component, phoneNumber){
+    checkIfInboundOnlyMatchingLeadExists : function(component, phoneNumber, event, authKey, resp){
         const action = component.get("c.checkIfMatchingLeadExists");
         action.setParams({"phoneNumber": phoneNumber});
         action.setCallback(this, response => {
@@ -1024,7 +1024,7 @@
                     component.set("v.inboundOnlyCallPhone", phoneNumber);
                     component.set("v.openSelectLeadModal", true);
                 } else {
-                    this.handleNextCallAPIResponse(component,event,authKey,response);
+                    this.handleNextCallAPIResponse(component,event,authKey,resp);
                 }
             } else if(state === "INCOMPLETE"){
                 console.log("Incomplete state");
