@@ -1,7 +1,8 @@
 <aura:component controller="LeadSoftphoneMatchingLeads_ctl">
     <aura:attribute name="phone" type="String"/>
     <aura:attribute name="leadOptions" type="List"/>
-    <aura:attribute name="selectedLeadId" type="String"/>
+    <aura:attribute name="leadsMap" type="Map"/>
+    <aura:attribute name="selectedLead" type="Lead"/>
     <aura:attribute name="errorResponse" type="String"/>
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
     <aura:registerEvent name="selectMatchingLead" type="c:LeadSoftphoneSelectMatchingLead"/>

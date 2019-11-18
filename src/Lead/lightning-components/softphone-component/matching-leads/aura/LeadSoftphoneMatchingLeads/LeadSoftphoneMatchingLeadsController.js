@@ -4,12 +4,16 @@
         const action = component.get("c.getMatchingLeads");
         action.setParams({"phoneNumber": phoneNumber});
         action.setCallback(this, response => {
+            debugger;
             const state = response.getState();
             if(state === "SUCCESS"){
                 const proceedResponse = helper.proceedInitSuccessResponse(response);
                 if(proceedResponse.success){
-                    const leadOptions = proceedResponse.leadOptions;
+                    const leadResponse = proceedResponse.leadResponse;
+                    const leadOptions = leadResponse.leadOptions;
+                    const leadsMap = leadResponse.leadsMap;
                     component.set("v.leadOptions", leadOptions);
+                    component.set("v.leadsMap", leadsMap);
                 } else {
                     const error = "Unexpected error occurs. Please, contact developer support";
                     component.set("v.errorResponse", error); 
@@ -24,15 +28,18 @@
 
     handleLeadChange : function(component, event, helper){
         const leadId = event.getParam("value");
-        component.set("v.selectedLeadId", leadId);
+        const leadsMap = component.get("v.leadsMap");
+        const lead = leadsMap[leadId];
+        console.log("lead: " + JSON.stringify(lead));
+        component.set("v.selectedLead", lead);
         const workspaceAPI = component.find("workspace");
         helper.openSelectedLeadTab(leadId, workspaceAPI);
     },
 
     handleLeadSelect : function(component, event, helper) {
-        const leadId = component.get("v.selectedLeadId");
+        const lead = component.get("v.selectedLead");
         const selectLeadEvent = component.getEvent("selectMatchingLead");
-        selectLeadEvent.setParams({"leadId": leadId});
+        selectLeadEvent.setParams({"lead": lead});
         selectLeadEvent.fire();
     },
 

@@ -3,22 +3,26 @@
         const leads = response.getReturnValue();
         
         if(leads.length > 0){
-            const leadOptions = this.convertLeadsToOptions(leads);
+            const leadResponse = this.collectLeadResponse(leads);
             return {"success": true,
-                    "leadOptions": leadOptions};
+                    "leadResponse": leadResponse};
         } else {
             return {"success": false};
         }
     },
 
-    convertLeadsToOptions : function(leads){
+    collectLeadResponse : function(leads){
         const leadOptions = [];
+        const leadsMap = {};
         leads.forEach(lead => {
+            const leadId = lead.Id;
             const leadOption = {"label": lead.Name,
-                                "value": lead.Id};
+                                "value": leadId};
             leadOptions.push(leadOption);
+            leadsMap[leadId] = lead;
         });
-        return leadOptions;
+        return {"leadOptions": leadOptions,
+                "leadsMap": leadsMap};
     },
 
     proceedInitErrorResponse : function(response) {
