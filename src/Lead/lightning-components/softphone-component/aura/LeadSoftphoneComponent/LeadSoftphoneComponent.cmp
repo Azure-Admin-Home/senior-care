@@ -218,7 +218,7 @@
             </aura:if>
         </aura:if>
         <aura:if isTrue="{!v.openSelectLeadModal}">
-            <c:LeadSoftphoneMatchingLeads phone="{!v.inboundCallPhone}"/>
+            <c:LeadSoftphoneMatchingLeads phone="{!v.inboundOnlyCallPhone}"/>
         </aura:if>
         <aura:if isTrue="{!v.openSelectInboundLeadModal}">
             <c:LeadSoftphoneMatchingLeads phone="{!v.inboundLeadResponse.callerMobileNumber}"/>
