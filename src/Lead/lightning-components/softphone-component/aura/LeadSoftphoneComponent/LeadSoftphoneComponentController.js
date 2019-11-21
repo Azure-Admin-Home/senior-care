@@ -667,5 +667,8 @@
             component.set("v.inboundLeadResponse", null);
             helper.openCreateNextInboundLeadModalWindow(component, inboundLeadResponse);
         }
+    },
+    handleCloseTransferModal : function(component, event, helper){
+        component.set("v.openTransferCallModal", false);
     }
 })
