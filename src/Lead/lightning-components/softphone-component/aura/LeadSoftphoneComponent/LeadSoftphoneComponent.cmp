@@ -54,6 +54,7 @@
     
     <aura:handler event="c:LeadSoftphoneCallToLead" name="callToLead" action="{! c.handleEnrollmentCall }"/> 
     <aura:handler event="c:LeadSoftphoneSelectMatchingLead" name="selectMatchingLead" action="{! c.handleSelectMatchingLead }"/> 
+    <aura:handler event="c:LeadSoftphoneCloseTransferModal" name="closeTransferModal" action="{! c.handleCloseTransferModal }"/> 
     <aura:handler event="lightning:omniChannelStatusChanged" action="{! c.onStatusChanged }"/>
     <aura:handler event="lightning:omniChannelWorkAssigned" action="{!c.onWorkAssigned}"/>
     <aura:handler event="lightning:omniChannelLogout" action="{!c.handleOmniLogOut}"/>
@@ -217,6 +218,7 @@
                 </div>
             </aura:if>
         </aura:if>
+        <!-- REFACTORING: Need to move to dynamic creation of the LeadSoftphoneMatchingLeads component -->
         <aura:if isTrue="{!v.openSelectLeadModal}">
             <c:LeadSoftphoneMatchingLeads phone="{!v.inboundOnlyCallPhone}"/>
         </aura:if>
@@ -227,19 +229,20 @@
             <c:LeadSoftphoneMatchingLeads phone="{!v.inboundLeadResponse.callerMobileNumber}"/>
         </aura:if>    
         <aura:if isTrue="{!v.openTransferCallModal}">
-            <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
-                <div class="slds-modal__container">
+            <c:LeadSoftphoneTransferCall callerId="{!v.callerId}" authKey="{!v.authKey}" lead="{!v.lead}"/>
+            <!-- <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
+                <div class="slds-modal__container"> -->
                     <!-- modal header start -->
-                    <header class="slds-modal__header">
+                    <!-- <header class="slds-modal__header">
                         <lightning:buttonIcon iconName="utility:close"
                                               onclick="{! c.closeTransferCallModel }"
                                               alternativeText="close"
                                               variant="bare-inverse"
                                               class="slds-modal__close"/>
                         <h5 id="modal-heading-01" class="slds-text-heading_medium slds-hyphenate">Transfer Agent Details</h5>
-                    </header>
+                    </header> -->
                     <!-- modal body start -->
-                    <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
+                    <!-- <div class="slds-modal__content slds-p-around_medium" id="modal-content-id-1">
                         <div class="slds-align_absolute-center">
                             <lightning:select name="Select Agent" label="Select Agent" onchange="{! c.handleSelectAgnetChange }" aura:id="agentLookup" value="{!v.agentNumber}">
                                 <option value="">-Select-</option>
@@ -248,9 +251,9 @@
                                 </aura:iteration>
                             </lightning:select>
                         </div>
-                    </div>
+                    </div> -->
                     <!-- modal footer start-->
-                    <footer class="slds-modal__footer">
+                    <!-- <footer class="slds-modal__footer">
                         <lightning:button variant="neutral" 
                                           label="Cancel"
                                           title="Cancel"
@@ -262,7 +265,7 @@
                     </footer>
                 </div>
             </section>
-            <div class="slds-backdrop slds-backdrop_open"></div>
+            <div class="slds-backdrop slds-backdrop_open"></div> -->
             <!--###### MODAL BOX Part END Here ######-->
         </aura:if>
         <aura:if isTrue="{!v.leadInputModalBox}">
