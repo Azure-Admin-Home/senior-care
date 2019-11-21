@@ -1,8 +1,14 @@
-<aura:component>
-    <aura:attribute name="allAgentsList" type="List"/>
-    <aura:attribute name="callAgentButtonDisableFlag" type="Boolean" default="true"/>
+<aura:component controller="LeadSoftphoneTransferCall_ctl">
+    <aura:attribute name="agentsList" type="List"/>
+    <aura:attribute name="callerId" type="String" default=""/>
+    <aura:attribute name="authKey" type="String" default=""/>
+    <aura:attribute name="lead" type="Lead"/>
+    <aura:attribute name="callAgentDisable" type="Boolean" default="true"/>
+    <aura:attribute name="openManualInputModal" type="Boolean" default="false"/>
     <aura:attribute name="agentNumber" type="String" default=""/>
     <aura:handler name="init" value="{!this}" action="{!c.init}"/>
+    <aura:registerEvent name="closeTransferModal" type="c:LeadSoftphoneCloseTransferModal"/>
+    <aura:handler event="c:LeadSoftphonePhoneSpecified" name="manualSpecifyPhone" action="{! c.handleCloseManualInputModal }"/> 
 
     <section role="dialog" tabindex="-1" aria-labelledby="modal-heading-02" aria-modal="true" aria-describedby="modal-content-id-2" class="slds-modal slds-fade-in-open">
         <div class="slds-modal__container">
@@ -17,12 +23,23 @@
             
             <div class="slds-modal__content slds-p-around_medium">
                 <div class="slds-align_absolute-center">
-                    <lightning:select name="Select Agent" label="Select Agent" onchange="{! c.handleSelectAgnetChange }" aura:id="agentLookup" value="{!v.agentNumber}">
+                    <lightning:select aura:id="agentSelect" name="Select Agent" label="Select Agent" onchange="{! c.handleSelectAgnetChange }">
                         <option value="">-Select-</option>
-                        <aura:iteration items="{!v.allAgentsList}" var="option">
+                        <aura:iteration items="{!v.agentsList}" var="option">
                             <option text="{!option.Name}" value="{!option.Phone}"></option>
                         </aura:iteration>
                     </lightning:select>
+                    <span style="margin-top: 23px;">
+                            <lightning:buttonIcon iconName="utility:edit"  
+                                                  onclick="{! c.handleSpecifyAgentNumberManually }"
+                                                  alternativeText="Specify agent number manually"/>
+                    </span>
+                    <aura:if isTrue="{!v.openManualInputModal}">
+                        <c:LeadSoftphoneManualPhoneInput/>
+                    </aura:if>
+                </div>
+                <div class="slds-align_absolute-center" style="height:2rem">
+                    Selected number: {!v.agentNumber}
                 </div>
             </div>
             
@@ -30,12 +47,12 @@
                 <lightning:button variant="neutral" 
                                   label="Cancel"
                                   title="Cancel"
-                                  onclick="{! c.closeTransferCallModel }"/>
+                                  onclick="{!c.closeTransferCallModel}"/>
                 <lightning:button variant="brand" 
                                   label="Call Agent"
                                   title="Call Agent" 
-                                  disabled="{!v.callAgentButtonDisableFlag}"
-                                  onclick="{! c.handleCallAgent }"/>
+                                  disabled="{!v.callAgentDisable}"
+                                  onclick="{!c.handleCallAgent}"/>
             </footer>
         </div>
     </section>
