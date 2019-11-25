@@ -245,6 +245,7 @@
         }
         if(!nextCallFlag && lead)
         {
+            const did = component.get("v.did");
             var disposition = component.get("v.dispositionDupValue");
             var callNotes = component.get("v.callNotes");
             var followupTaskNotes = component.get("v.followUpNotes");
@@ -259,6 +260,7 @@
             var dispositionTask = {};
             dispositionTask['subject'] = disposition;
             dispositionTask['Notes'] = callNotes;
+            dispositionTask['did'] = did;
             dispositionTask['isDisposition'] = true;
             mainResp['taskElement'] = dispositionTask;
             mainResp['getCallDataResp'] = getCallDataResponse;
@@ -379,10 +381,12 @@
             mainResp['isEvent'] =  false;
             if(dispositionValue !== '')
             {
+                const did = component.get("v.did");
                 mainResp['dispositionName'] = dispositionValue;
                 var dispositionTask = {};
                 dispositionTask['subject'] = dispositionValue;
                 dispositionTask['Notes'] = callNotes;
+                dispositionTask['did'] = did;
                 dispositionTask['isDisposition'] = true;
                 mainResp['getCallDataResp'] = getCallDataResponse;
                 mainResp['taskElement'] = dispositionTask;
@@ -439,10 +443,12 @@
             mainResp['isEvent'] =  false;
             if(dispositionValue !== '')
             {
+                const did = component.get("v.did");
                 mainResp['dispositionName'] = dispositionValue;
                 var dispositionTask = {};
                 dispositionTask['subject'] = dispositionValue;
                 dispositionTask['Notes'] = callNotes;
+                dispositionTask['did'] = did;
                 dispositionTask['isDisposition'] = true;
                 mainResp['getCallDataResp'] = getCallDataResponse;
                 mainResp['taskElement'] = dispositionTask;
@@ -488,10 +494,12 @@
             mainResp['isEvent'] =  false;
             if(dispositionValue !== '')
             {
+                const did = component.get("v.did");
                 mainResp['dispositionName'] = dispositionValue;
                 var dispositionTask = {};
                 dispositionTask['subject'] = dispositionValue;
                 dispositionTask['Notes'] = callNotes;
+                dispositionTask['did'] = did;
                 dispositionTask['isDisposition'] = true;
                 mainResp['getCallDataResp'] = getCallDataResponse;
                 mainResp['taskElement'] = dispositionTask;
@@ -620,17 +628,17 @@
         var a = component.get('c.handleEndCall');
         $A.enqueueAction(a);
     },
-    saveLead : function(component,event,helper)
-    {
+    saveLead : function(component,event,helper){
         component.set("v.isLeadFlag",true);
-        var callerId = component.get("v.callerId");
-        var firstName = component.get("v.leadFirstName");
-        var lastName = component.get("v.leadLastName");
-        var element = {};
-        element['FirstName'] = firstName;
-        element['LastName'] = lastName;
-        element['Phone'] = callerId;
-        var jsonString = JSON.stringify(element);
+        const did = component.get("v.did");
+        const callerId = component.get("v.callerId");
+        const firstName = component.get("v.leadFirstName");
+        const lastName = component.get("v.leadLastName");
+        const element = {"FirstName": firstName,
+                         "LastName": lastName,
+                         "Phone": callerId,
+                         "Original_TFN_Number__c": did};
+        const jsonString = JSON.stringify(element);
         helper.handleCreateLead(component,event,jsonString);
         component.set("v.leadInputModalBox",false);
     },
