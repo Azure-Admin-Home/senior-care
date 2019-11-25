@@ -33,7 +33,7 @@ public class LeadSoftphoneComponent_ctl
             //newLead.Company = 'Dummy Company';
             insert newLead;
             
-            Lead respLead = [SELECT Id,Name,Phone,MobilePhone,Inbound_Outbound__c FROM Lead WHERE Id =: newLead.Id];
+            Lead respLead = [SELECT Id,Name,Phone,MobilePhone,Inbound_Outbound__c,Original_TFN_Number__c FROM Lead WHERE Id =: newLead.Id];
             
             wrap.isSuccess = true;
             wrap.lead = respLead;
@@ -191,7 +191,7 @@ public class LeadSoftphoneComponent_ctl
     @AuraEnabled
     public static Lead getLead(String leadId,String auth_key){
         
-        Lead returnLead = [SELECT ID,Name,Phone,MobilePhone FROM Lead where Id =: leadId];
+        Lead returnLead = [SELECT ID,Name,Phone,MobilePhone,Original_TFN_Number__c FROM Lead where Id =: leadId];
         loadCall(auth_key,returnLead.Phone != null ?returnLead.Phone : returnLead.MobilePhone);
         return returnLead;
     }
@@ -206,6 +206,7 @@ public class LeadSoftphoneComponent_ctl
         nextCallWrapper returnResp = new nextCallWrapper();
         returnResp.isSucess = response.isSucess;
         returnResp.callerMobileNumber = response.callerMobileNumber;
+        returnResp.did = response.did;
         return returnResp;
     }
     @AuraEnabled
@@ -305,8 +306,10 @@ public class LeadSoftphoneComponent_ctl
             lead.Inbound_Outbound__c = String.isBlank(request.lead.Inbound_Outbound__c) ? 'Outbound' :request.lead.Inbound_Outbound__c ;
             lead.Disposition__c = request.dispositionName;
             lead.Timestamp__c = system.now();
-            if(request.taskElement != null)
-            {
+            String did = request.taskElement.did;
+            lead.Original_TFN_Number__c = did;
+            
+            if(request.taskElement != null){
                 Task task = new Task();
                 task.OwnerId = UserInfo.getUserId();
                 task.ActivityDate = system.today();
@@ -315,6 +318,7 @@ public class LeadSoftphoneComponent_ctl
                 task.WhoId = lead.Id;
                 task.TaskSubtype = 'Call';
                 task.Status = 'Open';
+                task.Original_TFN_Number__c = did;
                 Insert task;
                 
                 Attachment att = new Attachment();
@@ -391,6 +395,8 @@ public class LeadSoftphoneComponent_ctl
         public DateTime activityDateTime {get;set;}
         @AuraEnabled
         public Boolean isDisposition {get;set;}
+        @AuraEnabled
+        public String did {get;set;}
     }
     // Wrapper for response to the Lightinig component.
     public class responseWrapper
@@ -406,6 +412,8 @@ public class LeadSoftphoneComponent_ctl
         }
     }
     public class nextCallWrapper{
+        @AuraEnabled
+        public String did{get;set;}
         @AuraEnabled
         public String callerMobileNumber{get;set;}
         @AuraEnabled
