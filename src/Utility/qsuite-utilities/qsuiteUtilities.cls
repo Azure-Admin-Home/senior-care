@@ -252,14 +252,19 @@ public class qsuiteUtilities {
             if(resp.success[0] == '1')
             {
                 String callerNumber = resp.inbound[0].callerid[0];
+                String did = resp.inbound[0].did[0];
+                
                 inboundCallResponseWrapper returnResp = new inboundCallResponseWrapper();
-                returnResp.callerMobileNumber = callerNumber.replace('<', '').replace('>','').trim();
+                returnResp.callerMobileNumber = callerNumber.substringBetween('<', '>');
+                returnResp.did = did;
                 returnResp.isSucess = true;
+                
                 return returnResp;
             }
             else
             {
                 inboundCallResponseWrapper returnResp = new inboundCallResponseWrapper();
+                returnResp.did = '';
                 returnResp.callerMobileNumber = '';
                 returnResp.isSucess = false;
                 return returnResp;
@@ -267,6 +272,7 @@ public class qsuiteUtilities {
             
         }catch(Exception e){
             inboundCallResponseWrapper returnResp = new inboundCallResponseWrapper();
+            returnResp.did = '';
             returnResp.callerMobileNumber = '';
             returnResp.isSucess = false;
             return returnResp;
@@ -618,6 +624,7 @@ public class qsuiteUtilities {
     public class inboundCallResponseWrapper
     {
         public String callerMobileNumber{get;set;}
+        public String did{get;set;}
         public Boolean isSucess {get;set;}
     }
     //wrapper for transfer call API
