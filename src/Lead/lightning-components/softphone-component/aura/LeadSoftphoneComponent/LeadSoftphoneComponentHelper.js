@@ -232,29 +232,30 @@
                     this.checkIfInboundMatchingLeadExists(component, responseBody);
                 } else {
                     const leadPhoneOnline = component.get("v.leadphoneOnlineFlag");
-                    const self = this;
                     if(leadPhoneOnline) {
                         window.setTimeout(
                             $A.getCallback(function() {
-                                const statusString = $A.get("$Label.c.Status_Json");
-                                const omniAPI = component.find("omniToolkit");
+                                // const statusString = $A.get("$Label.c.Status_Json");
+                                // const omniAPI = component.find("omniToolkit");
                                 component.set("v.callFinished",false);
                                 component.set("v.dispositionValue","");
-                                const statusList = JSON.parse(statusString);
-                                statusList.forEach(function(status){
-                                    if(status.MasterLabel === 'Online'){
-                                        omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
-                                            try{
-                                                console.log('CHECK result: ', result);
-                                            	self.addClassToStatusIcon(component,event,'Online');
-                                            } catch(err){
-                                                console.error('CHECK ERROR: ', err);
-                                            }
-                                        }).catch(function(error) {
-                                            console.log(error);
-                                        });
-                                    }
-                                });
+                                const statusName = "Online";
+                                this.findStatusIdToSetAgentTo(statusName, component);
+                                // const statusList = JSON.parse(statusString);
+                                // statusList.forEach(function(status){
+                                    
+                                //     if(status.MasterLabel === statusName){
+                                //         const statusId = status.id;
+                                //         const omniAPI = component.find("omniToolkit");
+                                //         this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+                                //         // omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
+                                //         //     self.addClassToStatusIcon(component,event,'Online');
+                                //         // }).catch(function(error) {
+                                //         //     console.log(error);
+                                //         // });
+                                //     }
+                                // }
+                                // );
                             }), 9000
                         );
                     }
@@ -455,7 +456,28 @@
         component.set("v.error",true);
         component.set("v.ErrorMsg",msg);
     },
-    addClassToStatusIcon : function(component,event,selectedClass)
+    findStatusIdToSetAgentTo : function(statusName, component){
+        const statusString = $A.get("$Label.c.Status_Json");
+        const statusList = JSON.parse(statusString);
+        statusList.forEach( status => {
+            if(status.MasterLabel === statusName){
+                const statusId = status.id;
+                const omniAPI = component.find("omniToolkit");
+                this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+            }
+        });
+    },
+    setAgentStatusAndIcon : function(omniAPI, component, statusId, statusName){
+        omniAPI
+            .setServicePresenceStatus({"statusId": statusId})
+            .then(result => {
+                    this.addClassToStatusIcon(component,statusName);
+            })
+            .catch(error => {
+            console.log(error);
+            });
+    },
+    addClassToStatusIcon : function(component,selectedClass)
     {
         var cmpDiv = component.find('selectedStatus');
         if(selectedClass === 'Online')
@@ -741,10 +763,10 @@
     },
     handleInboundCallOnLead : function(component,event,authKey,omniAPI,lead)
     {
-        var omniAPI = component.find("omniToolkit");
-        var omniOnlineFlag = component.get("v.omniOnlineFlag");
-        var incomingOnlyFlag = component.get('v.incomingOnlyFlag');
-        var leadId = lead.Id;
+        
+        // var omniOnlineFlag = component.get("v.omniOnlineFlag");
+        // var incomingOnlyFlag = component.get('v.incomingOnlyFlag');
+        // var leadId = lead.Id;
         var action = component.get("c.nextCallApi");
         action.setParams({auth_key : authKey});
         action.setCallback(this, function(response) {
@@ -761,19 +783,24 @@
                     if(leadPhoneOnline){
                         window.setTimeout(
                             $A.getCallback(function() {
-                                var statusString = $A.get("$Label.c.Status_Json");
+                                // var statusString = $A.get("$Label.c.Status_Json");
                                 component.set("v.callFinished",false);
                                 component.set("v.dispositionValue","");
-                                var statusList = JSON.parse(statusString);
-                                statusList.forEach(function(status){
-                                    if(status.MasterLabel === 'Online'){
-                                        omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
-                                            this.addClassToStatusIcon(component,event,'Online');
-                                        }).catch(function(error) {
-                                            console.log(error);
-                                        });
-                                    }
-                                });
+                                const statusName = 'Online';
+                                this.findStatusIdToSetAgentTo(statusName, component);
+                                // var statusList = JSON.parse(statusString);
+                                // statusList.forEach(function(status){
+                                //     if(status.MasterLabel === statusName){
+                                //         const statusId = status.Id;
+                                //         const omniAPI = component.find("omniToolkit");
+                                //         this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+                                //         // omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
+                                //         //     this.addClassToStatusIcon(component,event,'Online');
+                                //         // }).catch(function(error) {
+                                //         //     console.log(error);
+                                //         // });
+                                //     }
+                                // });
                             }), 9000
                         );
                     }
@@ -1108,18 +1135,23 @@
     {
         console.log("CHECK callFinished", component.get("v.callFinished"));
         component.set("v.callFinished",false);
-        var omniAPI = component.find("omniToolkit");
-        var statusString = $A.get("$Label.c.Status_Json");
-        var statusList = JSON.parse(statusString);
-        statusList.forEach(function(status){
-            if(status.MasterLabel === 'Online - Outbound Calls Only'){
-                omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
-                    this.addClassToStatusIcon(component,event,'Online');
-                }).catch(function(error) {
-                    console.log("ERR omniApiError: ", JSON.stringify(error));
-                });
-            }
-        });
+        // var omniAPI = component.find("omniToolkit");
+        // var statusString = $A.get("$Label.c.Status_Json");
+        // var statusList = JSON.parse(statusString);
+        const statusName = "Online - Outbound Calls Only";  
+        this.findStatusIdToSetAgentTo(statusName, component);
+        // statusList.forEach(function(status){
+        //     if(status.MasterLabel === statusName){
+        //         const statusId = status.id;
+        //         const omniAPI = component.find("omniToolkit");
+        //         this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+        //         // omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
+        //         //     this.addClassToStatusIcon(component,event,'Online');
+        //         // }).catch(function(error) {
+        //         //     console.log("ERR omniApiError: ", JSON.stringify(error));
+        //         // });
+        //     }
+        // });
     },
     handleNextCallOnOutboundOnly : function(component,event)
     {

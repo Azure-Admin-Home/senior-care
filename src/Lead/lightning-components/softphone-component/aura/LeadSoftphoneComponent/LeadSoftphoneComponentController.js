@@ -21,7 +21,7 @@
         var statusList = JSON.parse(statusString);
         
         omniAPI.getServicePresenceStatusId().then(function(result) {
-            helper.addClassToStatusIcon(component,event,result.statusName);
+            helper.addClassToStatusIcon(component,result.statusName);
             
             component.set("v.selectedStatus",result.statusName);
             // comopnent.find('statusMenu').set("v.value",result.statusName);
@@ -213,18 +213,19 @@
                component.set("v.enrollmentOnFlag", true);
                component.set("v.callFinished", true);
             });
-            var statusString = $A.get("$Label.c.Status_Json");
-            var statusList = JSON.parse(statusString);
-            statusList.forEach(function (status) {
-                if (status.MasterLabel === selectedMenuItemValue) {
-                    console.log('Omni status',status.Id);
-                    omniAPI.setServicePresenceStatus({ statusId: status.Id }).then(function (result) {
-                        this.addClassToStatusIcon(component, event, selectedMenuItemValue);
-                    }).catch(function (error) {
-                        console.log("ERROR in Inbound - Enrollment: ", error);
-                    });
-                }
-            });
+            helper.findStatusIdToSetAgentTo(selectedMenuItemValue, component);
+            // var statusString = $A.get("$Label.c.Status_Json");
+            // var statusList = JSON.parse(statusString);
+            // statusList.forEach(function (status) {
+            //     if (status.MasterLabel === selectedMenuItemValue) {
+            //         console.log('Omni status',status.Id);
+            //         omniAPI.setServicePresenceStatus({ statusId: status.Id }).then(function (result) {
+            //             this.addClassToStatusIcon(component, selectedMenuItemValue);
+            //         }).catch(function (error) {
+            //             console.log("ERROR in Inbound - Enrollment: ", error);
+            //         });
+            //     }
+            // });
             //const authKey = component.get("v.authKey");
             //const isAlreadyAuth = ((authKey !== null)||(authkey !== undefined));
             //if(isAlreadyAuth){
@@ -295,7 +296,7 @@
                 
                 omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
                     helper.closeTheOmniChannelMyWork(component,event);
-                    helper.addClassToStatusIcon(component,event,selectedClass);
+                    helper.addClassToStatusIcon(component,selectedClass);
                 }).catch(function(error) {
                     console.log(error);
                 }); 
@@ -308,7 +309,7 @@
                 component.set("v.onlineFLag",false);
                 component.set("v.dispositionValue","");
                  component.set("v.omniOnlineFlag",false);
-                helper.addClassToStatusIcon(component,event,'Offline');
+                helper.addClassToStatusIcon(component,'Offline');
                 component.set("v.incomingOnlyFlag",false);
                 component.set("v.outboundOnlyFlag",false);
             }
