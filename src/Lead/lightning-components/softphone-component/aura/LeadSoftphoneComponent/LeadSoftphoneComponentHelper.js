@@ -459,12 +459,14 @@
     findStatusIdToSetAgentTo : function(statusName, component){
         const statusString = $A.get("$Label.c.Status_Json");
         const statusList = JSON.parse(statusString);
-        statusList.forEach( status => {
-            if(status.MasterLabel === statusName){
-                const statusId = status.id;
+        statusList.some( status => {
+            const isSuitableStatus = (status.MasterLabel === statusName);
+            if(isSuitableStatus){
+                const statusId = status.Id;
                 const omniAPI = component.find("omniToolkit");
                 this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
             }
+            return isSuitableStatus;
         });
     },
     setAgentStatusAndIcon : function(omniAPI, component, statusId, statusName){
@@ -1332,9 +1334,11 @@
         const defaultDisposition = $A.get("$Label.c.Disposition_Default");
         const callNotes = component.get("v.callNotes");
         const getCallDataResponse = component.get("v.getCallDataResponse");
+        const did = component.get("v.did");
         
         const logCallTask = {"subject": defaultDisposition,
                              "Notes": callNotes,
+                             "did": did,
                              "isDisposition": true};
         
         const createRequest = {"lead": lead,
