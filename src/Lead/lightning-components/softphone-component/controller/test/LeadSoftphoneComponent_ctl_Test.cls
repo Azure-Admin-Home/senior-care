@@ -4,7 +4,7 @@ public class LeadSoftphoneComponent_ctl_Test {
     public static void testData(){
         
        
-        Lead lead = new Lead(LastName='TestLead',Phone='12345',company='TestCompany',MobilePhone='9876543211');
+        Lead lead = new Lead(LastName='TestLead',Phone='+(551)-999-05-93',company='TestCompany',MobilePhone='9876543211');
         lead.State = 'AZ';
         lead.LeadSource = 'Cege';
         lead.Sub_ID__c = '1';
@@ -55,8 +55,8 @@ public class LeadSoftphoneComponent_ctl_Test {
         Test.setMock(HttpCalloutMock.class, new qsuiteUtilities_Mock());
         Lead testLead = [SELECT Id FROM Lead WHERE LastName='TestLead'];
         Lead tempLead = LeadSoftphoneComponent_ctl.getLead(testLead.Id,'33227ea9-d9d0-11e9-abcc-0a52c0223f8c');
-        String reqJSON = '{"lead":{"Id":"00Q2f000001V4gmEAC","Name":"Lead 10","Phone":"5519990593"},"isEvent":true,"dispositionName":"Caller Disconnected - HANGUP","taskElement":{"subject":"Caller Disconnected - HANGUP","Notes":"Test Note","isDisposition":true},"eventElement":{"subject":"Call","Notes":"Test Followup Note","isDisposition":false,"activityDateTime":"2019-09-27T21:36:00.000Z"}}';
-        String createDispJson = '{"lead":{"Id":"00Q2f000001V4gmEAC","Name":"Lead 10","Phone":"5519990593"},"isEvent":true,"dispositionName":"Caller Disconnected - HANGUP","taskElement":{"subject":"Caller Disconnected - HANGUP","Notes":"Test Note","isDisposition":true},"eventElement":{"subject":"Call","Notes":"Test Followup Note","isDisposition":false,"activityDateTime":"2019-09-27T21:36:00.000Z"}}';
+        String reqJSON = '{"lead":{"Id":"00Q2f000001V4gmEAC","Name":"Lead 10","Phone":"+(551)-999-05-93"},"isEvent":true,"dispositionName":"Caller Disconnected - HANGUP","taskElement":{"subject":"Caller Disconnected - HANGUP","Notes":"Test Note","isDisposition":true},"eventElement":{"subject":"Call","Notes":"Test Followup Note","isDisposition":false,"activityDateTime":"2019-09-27T21:36:00.000Z"}}';
+        String createDispJson = '{"lead":{"Id":"00Q2f000001V4gmEAC","Name":"Lead 10","Phone":"+(551)-999-05-93"},"isEvent":true,"dispositionName":"Caller Disconnected - HANGUP","taskElement":{"subject":"Caller Disconnected - HANGUP","Notes":"Test Note","isDisposition":true},"eventElement":{"subject":"Call","Notes":"Test Followup Note","isDisposition":false,"activityDateTime":"2019-09-27T21:36:00.000Z"}}';
         LeadSoftphoneComponent_ctl.responseWrapper resp = LeadSoftphoneComponent_ctl.handleServerCall(reqJSON);
         LeadSoftphoneComponent_ctl.createDispositonTask(createDispJson, testLead.Id);
         Test.stopTest(); 
