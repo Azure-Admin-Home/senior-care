@@ -1,52 +1,60 @@
 ({
-    callerMethod : function(component,event,jsonString,leadId)
-    {       
-        var onlineFLag = component.get("v.omniOnlineFlag");
-        var action = component.get("c.handleServerCall");
-        var omniAPI = component.find("omniToolkit");
-        var authKey = component.get("v.authKey");
-        var incomingOnlyFlag = component.get("v.incomingOnlyFlag");
-        var outboundOnlyFlag = component.get("v.outboundOnlyFlag");
-        action.setParams({ reqJSON : jsonString});
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var resp = response.getReturnValue();
-                if(resp.isSucess)
-                {
-                    if(incomingOnlyFlag)
-                    {
-                        this.handleInboundOnly(component,event,authKey);
-                    }
-                    else if(outboundOnlyFlag)
-                    {
-                        this.handleNextCallOnOutboundOnly(component,event,authKey);
-                    }
-                    else{
-                        this.handleInboundCallOnLead(component,event,authKey,omniAPI,leadId); 
-                    }
-                }
-                else
-                {
-                    console.log(resp.errorMsg);
-                }
-            }
-            else if (state === "INCOMPLETE") {
-                // do something
-            }
-                else if (state === "ERROR") {
-                    var errors = response.getError();
-                    if (errors) {
-                        if (errors[0] && errors[0].message) {
-                            console.log("Error message: " + 
-                                        errors[0].message);
+    produceResponseHandlePromise : function(action){
+        return new Promise(
+                $A.getCallback((resolve, reject) => {
+                    action.setCallback(this, result => {
+                        if (result.getState() === 'SUCCESS') {
+                            const responseBody = result.getReturnValue();
+                            return resolve(responseBody);
                         }
-                    } else {
-                        console.log("Unknown error");
-                    }
+                        if (result.getState() === 'ERROR') {
+                          console.log('ERROR', result.getError());
+                          return reject(result.getError());
+                        }
+                    });
+                    $A.enqueueAction(action);
+                })
+        );
+    },
+    callerMethod : function(component,event,jsonString,leadId){       
+        const action = component.get("c.handleServerCall");
+        action.setParams({ reqJSON : jsonString}); 
+        const responseHandler = this.produceResponseHandlePromise(action);
+        
+        const errorHandler = (errors) => {
+            if (errors[0] && errors[0].message) {
+                console.log("Error message: " + 
+                            errors[0].message);
+            } else {
+                console.log("Unknown error: ", errors);
+            }
+        };
+
+        const successHandler = (responseBody) => {
+            if(responseBody.isSucess){
+                // const onlineFLag = component.get("v.omniOnlineFlag");
+                const omniAPI = component.find("omniToolkit");
+                const authKey = component.get("v.authKey");
+                const incomingOnlyFlag = component.get("v.incomingOnlyFlag");
+                const outboundOnlyFlag = component.get("v.outboundOnlyFlag");
+                
+                if(incomingOnlyFlag) {
+                    this.handleInboundOnly(component,event,authKey);
+                } else if(outboundOnlyFlag) {
+                    this.handleNextCallOnOutboundOnly(component,event,authKey);
+                } else {
+                    this.handleInboundCallOnLead(component,event,authKey,omniAPI,leadId); 
                 }
-        });
-        $A.enqueueAction(action);
+            } else {
+                const controllerError = responseBody.errorMsg;
+                console.log(controllerError);
+                errorHandler(controllerError);
+            }
+        };
+
+        responseHandler
+            .then(successHandler)
+            .catch(errorHandler);
     },
     loginToQsuite : function(component,event,omniAPI,inboundOn,callback)
     {
@@ -208,132 +216,119 @@
         });
         $A.enqueueAction(action);  
     },
-    handleInboundCall : function(component,event,authKey)
-    {
-        var authKey = component.get("v.authKey");
-        var omniOnlineFlag = component.get('v.omniOnlineFlag');
-        var incomingOnlyFlag = component.get('v.incomingOnlyFlag');
-        var omniAPI = component.find("omniToolkit");
-        var action = component.get("c.nextCallApi");
+    handleInboundCall : function(component,event,authKey){
+        // const authKey = component.get("v.authKey");
+        // var omniOnlineFlag = component.get('v.omniOnlineFlag');
+        // var incomingOnlyFlag = component.get('v.incomingOnlyFlag');
+        // var omniAPI = component.find("omniToolkit");
+        const action = component.get("c.nextCallApi");
         action.setParams({auth_key : authKey});
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                var resp = response.getReturnValue();
-                if(resp.isSucess)
-                {
+        const responseHandler = this.produceResponseHandlePromise(action);
+        const successHandler = (responseBody) => {
+                if(responseBody.isSucess) {
+                    const did = responseBody.did;
+                    this.setupNextCallDidValue(component, did);
                     this.triggerSoundEvent(component);
-                    this.checkIfInboundMatchingLeadExists(component, resp);
-                }
-            /*    else if(omniOnlineFlag == true)
-                {
-                    conosle.log('Check for outbound call.');
-                    window.setTimeout(
-                        $A.getCallback(function() {
-                            omniAPI.getAgentWorks().then(function(result) {
-                                var works = JSON.parse(result.works);
-                                var leadId = (works[0].workItemId);
-                                if(leadId){
-                                    var action = component.get("c.getLead");
-                                    action.setParams({ leadId : leadId,auth_key : authKey});
-                                    action.setCallback(this, function(response) {
-                                        var state = response.getState();
-                                        if (state === "SUCCESS") {
-                                            component.set("v.HideSpinner", false);
-                                            component.set("v.onlineFLag",true);
-                                            var returnLead = response.getReturnValue();
-                                            component.set("v.lead",returnLead);
-                                            component.set("v.isLeadFlag",true);
-                                            var workspaceAPI = component.find("workspace");
-                                            workspaceAPI.openTab({
-                                                pageReference: {
-                                                    "type": "standard__recordPage",
-                                                    "attributes": {
-                                                        "recordId":returnLead.Id, //lead Id
-                                                        "actionName":"view"
-                                                    },
-                                                    "state": {}
-                                                },
-                                                focus: true
-                                            }).then(function(response) {
-                                                
-                                            }).catch(function(error) {
-                                                console.log(error);
-                                            });
-                                        }
-                                        else if (state === "INCOMPLETE") {
-                                            // do something
-                                        }else if (state === "ERROR") {
-                                            var errors = response.getError();
-                                            if (errors) {
-                                                component.set("v.HideSpinner", false);
-                                                console.log("Error message: " + 
-                                                            errors[0].message);
-                                                this.showToast(component,event,errors[0].message);
-                                                component.set("v.lead","");
-                                                component.set("v.isLeadFlag",false);
-                                            } else {
-                                                console.log("Unknown error");
-                                            }
-                                        }
-                                    });
-                                    $A.enqueueAction(action);
-                                }else{
-                                    helper.showToast(component,event,'No Lead is present in my work');
-                                }
-                            }).catch(function(error) {
-                                console.log(error);
-                            });
-                        }), 
-                    10000);
-                }  */
-                else
-                {
-                    var leadPhoneOnline = component.get("v.leadphoneOnlineFlag");
-                    var self = this;
-                    if(leadPhoneOnline)
-                    {
+                    this.checkIfInboundMatchingLeadExists(component, responseBody);
+                } else {
+                    const leadPhoneOnline = component.get("v.leadphoneOnlineFlag");
+                    if(leadPhoneOnline) {
                         window.setTimeout(
                             $A.getCallback(function() {
-                                var statusString = $A.get("$Label.c.Status_Json");
+                                // const statusString = $A.get("$Label.c.Status_Json");
+                                // const omniAPI = component.find("omniToolkit");
                                 component.set("v.callFinished",false);
                                 component.set("v.dispositionValue","");
-                                var statusList = JSON.parse(statusString);
-                                statusList.forEach(function(status){
-                                    if(status.MasterLabel === 'Online'){
-                                        omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
-                                            try{
-                                                console.log('CHECK result: ', result);
-                                            	self.addClassToStatusIcon(component,event,'Online');
-                                            } catch(err){
-                                                console.error('CHECK ERROR: ', err);
-                                            }
-                                        }).catch(function(error) {
-                                            console.log(error);
-                                        });
-                                    }
-                                });
+                                const statusName = "Online";
+                                this.findStatusIdToSetAgentTo(statusName, component);
+                                // const statusList = JSON.parse(statusString);
+                                // statusList.forEach(function(status){
+                                    
+                                //     if(status.MasterLabel === statusName){
+                                //         const statusId = status.id;
+                                //         const omniAPI = component.find("omniToolkit");
+                                //         this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+                                //         // omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
+                                //         //     self.addClassToStatusIcon(component,event,'Online');
+                                //         // }).catch(function(error) {
+                                //         //     console.log(error);
+                                //         // });
+                                //     }
+                                // }
+                                // );
                             }), 9000
                         );
                     }
                 }
-            }
-            else if (state === "INCOMPLETE") {
-                // do something
-            }else if (state === "ERROR") {
-                var errors = response.getError();
-                if (errors) {
-                    console.log("Error message: " + 
-                                errors[0].message);
-                    this.showToast(component,event,'No Lead is present in my work');
-                    component.set("v.lead","");
-                    component.set("v.isLeadFlag",false);
-                } else {
-                    console.log("Unknown error");
-                }
-            }
-        });
-        $A.enqueueAction(action);  
+        };
+        const errorHandler = (errors) => {
+            console.log("Error message: " + 
+                        errors[0].message);
+            this.showToast(component,event,'No Lead is present in my work');
+            component.set("v.lead","");
+            component.set("v.isLeadFlag",false);
+        };
+
+        responseHandler
+            .then(successHandler)
+            .catch(errorHandler);
+
+        // action.setCallback(this, function(response) {
+        //     var state = response.getState();
+        //     if (state === "SUCCESS") {
+        //         var resp = response.getReturnValue();
+        //         if(resp.isSucess)
+        //         {
+        //             this.triggerSoundEvent(component);
+        //             this.checkIfInboundMatchingLeadExists(component, resp);
+        //         }
+        //         else
+        //         {
+        //             var leadPhoneOnline = component.get("v.leadphoneOnlineFlag");
+        //             var self = this;
+        //             if(leadPhoneOnline)
+        //             {
+        //                 window.setTimeout(
+        //                     $A.getCallback(function() {
+        //                         var statusString = $A.get("$Label.c.Status_Json");
+        //                         component.set("v.callFinished",false);
+        //                         component.set("v.dispositionValue","");
+        //                         var statusList = JSON.parse(statusString);
+        //                         statusList.forEach(function(status){
+        //                             if(status.MasterLabel === 'Online'){
+        //                                 omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
+        //                                     try{
+        //                                         console.log('CHECK result: ', result);
+        //                                     	self.addClassToStatusIcon(component,event,'Online');
+        //                                     } catch(err){
+        //                                         console.error('CHECK ERROR: ', err);
+        //                                     }
+        //                                 }).catch(function(error) {
+        //                                     console.log(error);
+        //                                 });
+        //                             }
+        //                         });
+        //                     }), 9000
+        //                 );
+        //             }
+        //         }
+        //     }
+        //     else if (state === "INCOMPLETE") {
+        //         // do something
+        //     }else if (state === "ERROR") {
+        //         var errors = response.getError();
+        //         if (errors) {
+        //             console.log("Error message: " + 
+        //                         errors[0].message);
+        //             this.showToast(component,event,'No Lead is present in my work');
+        //             component.set("v.lead","");
+        //             component.set("v.isLeadFlag",false);
+        //         } else {
+        //             console.log("Unknown error");
+        //         }
+        //     }
+        // });
+        // $A.enqueueAction(action);  
     },
     checkIfInboundMatchingLeadExists : function(component, resp){
         const phoneNumber = resp.callerMobileNumber;
@@ -358,66 +353,133 @@
         });
         $A.enqueueAction(action);
     },
-    getLead : function(component,event,leadId)
-    {
-        var authKey = component.get("v.authKey");
-        var action = component.get("c.getLead");
-        action.setParams({ leadId : leadId,auth_key : authKey});
-        action.setCallback(this, function(response) {
-            var state = response.getState();
-            if (state === "SUCCESS") {
-                component.set("v.HideSpinner", false);
-                component.set("v.onlineFLag",true);
-                var returnLead = response.getReturnValue();
-                component.set("v.lead",returnLead);
-                if(returnLead.Phone !== '' || returnLead.Phone != undefined || returnLead.Phone != null)
-                {
-                    component.set("v.callerId",returnLead.Phone);
-                }else{
-                    component.set("v.callerId",returnLead.mobilePhone);
-                }   
-                component.set("v.isLeadFlag",true);
-                var workspaceAPI = component.find("workspace");
-                workspaceAPI.openTab({
-                    pageReference: {
-                        "type": "standard__recordPage",
-                        "attributes": {
-                            "recordId":returnLead.Id, //lead Id
-                            "actionName":"view"
-                        },
-                        "state": {}
+    getLead : function(component,event,leadId) {
+        const authKey = component.get("v.authKey");
+        const action = component.get("c.getLead");
+        action.setParams({ "leadId": leadId,
+                           "auth_key": authKey});
+        
+        const responseHandler = this.produceResponseHandlePromise(action);
+        
+        const successResponseHandler = (returnLead) => {
+            component.set("v.HideSpinner", false);
+            component.set("v.onlineFLag",true);
+            component.set("v.lead",returnLead);
+            const did = returnLead.Original_TFN_Number__c;
+            this.setupNextCallDidValue(component, did);
+            if(returnLead.Phone !== '' || returnLead.Phone != undefined || returnLead.Phone != null) {
+                component.set("v.callerId",returnLead.Phone);
+            } else {
+                component.set("v.callerId",returnLead.mobilePhone);
+            }   
+            component.set("v.isLeadFlag",true);
+            var workspaceAPI = component.find("workspace");
+            workspaceAPI.openTab({
+                pageReference: {
+                    "type": "standard__recordPage",
+                    "attributes": {
+                        "recordId":returnLead.Id, //lead Id
+                        "actionName":"view"
                     },
-                    focus: true
-                }).then(function(response) {
+                    "state": {}
+                },
+                focus: true
+            }).then(function(response) {
+                
+            }).catch(function(error) {
+                console.log(error);
+            });
+        };
+        
+        const errorResponseHandler = (errors) => {
+            component.set("v.HideSpinner", false);
+            console.log("Error message: " + 
+                        errors[0].message);
+            this.showToast(component,event,errors[0].message);
+            component.set("v.lead","");
+            component.set("v.isLeadFlag",false);
+        };
+
+        responseHandler
+            .then(successResponseHandler)
+            .catch(errorResponseHandler);
+        // action.setCallback(this, function(response) {
+        //     var state = response.getState();
+        //     if (state === "SUCCESS") {
+        //         component.set("v.HideSpinner", false);
+        //         component.set("v.onlineFLag",true);
+        //         var returnLead = response.getReturnValue();
+        //         component.set("v.lead",returnLead);
+        //         if(returnLead.Phone !== '' || returnLead.Phone != undefined || returnLead.Phone != null) {
+        //             component.set("v.callerId",returnLead.Phone);
+        //         }else{
+        //             component.set("v.callerId",returnLead.mobilePhone);
+        //         }   
+        //         component.set("v.isLeadFlag",true);
+        //         var workspaceAPI = component.find("workspace");
+        //         workspaceAPI.openTab({
+        //             pageReference: {
+        //                 "type": "standard__recordPage",
+        //                 "attributes": {
+        //                     "recordId":returnLead.Id, //lead Id
+        //                     "actionName":"view"
+        //                 },
+        //                 "state": {}
+        //             },
+        //             focus: true
+        //         }).then(function(response) {
                     
-                }).catch(function(error) {
-                    console.log(error);
-                });
-            }
-            else if (state === "INCOMPLETE") {
-                // do something
-            }else if (state === "ERROR") {
-                var errors = response.getError();
-                if (errors) {
-                    component.set("v.HideSpinner", false);
-                    console.log("Error message: " + 
-                                errors[0].message);
-                    this.showToast(component,event,errors[0].message);
-                    component.set("v.lead","");
-                    component.set("v.isLeadFlag",false);
-                } else {
-                    console.log("Unknown error");
-                }
-            }
-        });
-        $A.enqueueAction(action);
+        //         }).catch(function(error) {
+        //             console.log(error);
+        //         });
+        //     }
+        //     else if (state === "INCOMPLETE") {
+        //         // do something
+        //     }else if (state === "ERROR") {
+        //         var errors = response.getError();
+        //         if (errors) {
+        //             component.set("v.HideSpinner", false);
+        //             console.log("Error message: " + 
+        //                         errors[0].message);
+        //             this.showToast(component,event,errors[0].message);
+        //             component.set("v.lead","");
+        //             component.set("v.isLeadFlag",false);
+        //         } else {
+        //             console.log("Unknown error");
+        //         }
+        //     }
+        // });
+        // $A.enqueueAction(action);
     },
     showToast : function(component,event,msg)
     {
         component.set("v.error",true);
         component.set("v.ErrorMsg",msg);
     },
-    addClassToStatusIcon : function(component,event,selectedClass)
+    findStatusIdToSetAgentTo : function(statusName, component){
+        const statusString = $A.get("$Label.c.Status_Json");
+        const statusList = JSON.parse(statusString);
+        statusList.some( status => {
+            const isSuitableStatus = (status.MasterLabel === statusName);
+            if(isSuitableStatus){
+                const statusId = status.Id;
+                const omniAPI = component.find("omniToolkit");
+                this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+            }
+            return isSuitableStatus;
+        });
+    },
+    setAgentStatusAndIcon : function(omniAPI, component, statusId, statusName){
+        omniAPI
+            .setServicePresenceStatus({"statusId": statusId})
+            .then(result => {
+                    this.addClassToStatusIcon(component,statusName);
+            })
+            .catch(error => {
+            console.log(error);
+            });
+    },
+    addClassToStatusIcon : function(component,selectedClass)
     {
         var cmpDiv = component.find('selectedStatus');
         if(selectedClass === 'Online')
@@ -703,130 +765,44 @@
     },
     handleInboundCallOnLead : function(component,event,authKey,omniAPI,lead)
     {
-        var omniAPI = component.find("omniToolkit");
-        var omniOnlineFlag = component.get("v.omniOnlineFlag");
-        var incomingOnlyFlag = component.get('v.incomingOnlyFlag');
-        var leadId = lead.Id;
+        
+        // var omniOnlineFlag = component.get("v.omniOnlineFlag");
+        // var incomingOnlyFlag = component.get('v.incomingOnlyFlag');
+        // var leadId = lead.Id;
         var action = component.get("c.nextCallApi");
         action.setParams({auth_key : authKey});
         action.setCallback(this, function(response) {
             var state = response.getState();
             if (state === "SUCCESS") {
                 var resp = response.getReturnValue();
-                if(resp.isSucess)
-                {
+                if(resp.isSucess){
+                  const did = resp.did;
+                  this.setupNextCallDidValue(component, did);
                   this.triggerSoundEvent(component);  
                   this.checkIfInboundNextMatchingLeadExists(component, resp);
-                }
-               /* else if(lead.Inbound_Outbound__c !== 'Inbound')
-                {
-                    window.setTimeout(
-                        $A.getCallback(function() {
-                            omniAPI.getAgentWorks().then(function(result) {
-                                var works = JSON.parse(result.works);
-                                works.forEach(function (item){
-                                    if(item.workItemId == leadId.substring(0,15))
-                                    {
-                                        omniAPI.closeAgentWork({workId: item.workId}).then(function(res) {
-                                            if (res) {
-                                                component.set("v.lead","");
-                                                component.set("v.isLeadFlag",false);
-                                                component.find("callNotes").set("v.value","");
-                                                component.find("followupTaskNotes").set("v.value","");
-                                                component.set("v.dispositionValue","");
-                                            } else {
-                                                console.log("Close work failed");
-                                            }
-                                        }).catch(function(error) {
-                                            console.log(error);
-                                        });
-                                    }
-                                });
-                            });
-                        }), 10000
-                    );
-                }
-                    else if(omniOnlineFlag == true )
-                    {
-                        window.setTimeout(
-                            $A.getCallback(function() {
-                                omniAPI.getAgentWorks().then(function(result) {
-                                    var works = JSON.parse(result.works);
-                                    var leadId = (works[0].workItemId);
-                                    if(leadId){
-                                        var action = component.get("c.getLead");
-                                        action.setParams({ leadId : leadId,auth_key : authKey});
-                                        action.setCallback(this, function(response) {
-                                            var state = response.getState();
-                                            if (state === "SUCCESS") {
-                                                component.set("v.HideSpinner", false);
-                                                component.set("v.onlineFLag",true);
-                                                var returnLead = response.getReturnValue();
-                                                component.set("v.lead",returnLead);
-                                                component.set("v.isLeadFlag",true);
-                                                var workspaceAPI = component.find("workspace");
-                                                workspaceAPI.openTab({
-                                                    pageReference: {
-                                                        "type": "standard__recordPage",
-                                                        "attributes": {
-                                                            "recordId":returnLead.Id, //lead Id
-                                                            "actionName":"view"
-                                                        },
-                                                        "state": {}
-                                                    },
-                                                    focus: true
-                                                }).then(function(response) {
-                                                    
-                                                }).catch(function(error) {
-                                                    console.log(error);
-                                                });
-                                            }
-                                            else if (state === "INCOMPLETE") {
-                                                // do something
-                                            }else if (state === "ERROR") {
-                                                var errors = response.getError();
-                                                if (errors) {
-                                                    component.set("v.HideSpinner", false);
-                                                    console.log("Error message: " + 
-                                                                errors[0].message);
-                                                    this.showToast(component,event,errors[0].message);
-                                                    component.set("v.lead","");
-                                                    component.set("v.isLeadFlag",false);
-                                                } else {
-                                                    console.log("Unknown error");
-                                                }
-                                            }
-                                        });
-                                        $A.enqueueAction(action);
-                                    }else{
-                                        this.showToast(component,event,'No Lead is present in my work');
-                                    }
-                                }).catch(function(error) {
-                                    console.log(error);
-                                });
-                            }), 
-                            9000);
-                    } */
-                else
-                {
+                } else {
                     var leadPhoneOnline = component.get("v.leadphoneOnlineFlag");
-                    if(leadPhoneOnline)
-                    {
+                    if(leadPhoneOnline){
                         window.setTimeout(
                             $A.getCallback(function() {
-                                var statusString = $A.get("$Label.c.Status_Json");
+                                // var statusString = $A.get("$Label.c.Status_Json");
                                 component.set("v.callFinished",false);
                                 component.set("v.dispositionValue","");
-                                var statusList = JSON.parse(statusString);
-                                statusList.forEach(function(status){
-                                    if(status.MasterLabel === 'Online'){
-                                        omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
-                                            this.addClassToStatusIcon(component,event,'Online');
-                                        }).catch(function(error) {
-                                            console.log(error);
-                                        });
-                                    }
-                                });
+                                const statusName = 'Online';
+                                this.findStatusIdToSetAgentTo(statusName, component);
+                                // var statusList = JSON.parse(statusString);
+                                // statusList.forEach(function(status){
+                                //     if(status.MasterLabel === statusName){
+                                //         const statusId = status.Id;
+                                //         const omniAPI = component.find("omniToolkit");
+                                //         this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+                                //         // omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
+                                //         //     this.addClassToStatusIcon(component,event,'Online');
+                                //         // }).catch(function(error) {
+                                //         //     console.log(error);
+                                //         // });
+                                //     }
+                                // });
                             }), 9000
                         );
                     }
@@ -988,9 +964,7 @@
         var action = component.get("c.nextCallApi");
         action.setParams({auth_key : authKey});
         action.setCallback(this, function(response) {
-            // const self= this;
             this.isInboundOnlyMatchingLeadExists(component,event,authKey,response);
-            // this.handleNextCallAPIResponse(component,event,authKey,response);
         });
         $A.enqueueAction(action);
     },
@@ -1003,6 +977,8 @@
             const resp = response.getReturnValue();
             
             if(resp.isSucess){
+                const did = resp.did;
+                this.setupNextCallDidValue(component, did);
                 const phoneNumber = resp.callerMobileNumber;
                 this.checkIfInboundOnlyMatchingLeadExists(component, phoneNumber, event, authKey, response);
             } else {
@@ -1053,7 +1029,7 @@
                 component.set("v.callerId",resp.callerMobileNumber);
                 component.set("v.leadInputModalBox",true);
                 component.set("v.callFinished",false);
-								component.set("v.dispositionValue","");
+				component.set("v.dispositionValue","");
             }
             else
             {
@@ -1161,18 +1137,23 @@
     {
         console.log("CHECK callFinished", component.get("v.callFinished"));
         component.set("v.callFinished",false);
-        var omniAPI = component.find("omniToolkit");
-        var statusString = $A.get("$Label.c.Status_Json");
-        var statusList = JSON.parse(statusString);
-        statusList.forEach(function(status){
-            if(status.MasterLabel === 'Online - Outbound Calls Only'){
-                omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
-                    this.addClassToStatusIcon(component,event,'Online');
-                }).catch(function(error) {
-                    console.log("ERR omniApiError: ", error);
-                });
-            }
-        });
+        // var omniAPI = component.find("omniToolkit");
+        // var statusString = $A.get("$Label.c.Status_Json");
+        // var statusList = JSON.parse(statusString);
+        const statusName = "Online - Outbound Calls Only";  
+        this.findStatusIdToSetAgentTo(statusName, component);
+        // statusList.forEach(function(status){
+        //     if(status.MasterLabel === statusName){
+        //         const statusId = status.id;
+        //         const omniAPI = component.find("omniToolkit");
+        //         this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+        //         // omniAPI.setServicePresenceStatus({statusId: status.Id}).then(function(result) {
+        //         //     this.addClassToStatusIcon(component,event,'Online');
+        //         // }).catch(function(error) {
+        //         //     console.log("ERR omniApiError: ", JSON.stringify(error));
+        //         // });
+        //     }
+        // });
     },
     handleNextCallOnOutboundOnly : function(component,event)
     {
@@ -1353,9 +1334,11 @@
         const defaultDisposition = $A.get("$Label.c.Disposition_Default");
         const callNotes = component.get("v.callNotes");
         const getCallDataResponse = component.get("v.getCallDataResponse");
+        const did = component.get("v.did");
         
         const logCallTask = {"subject": defaultDisposition,
                              "Notes": callNotes,
+                             "did": did,
                              "isDisposition": true};
         
         const createRequest = {"lead": lead,
@@ -1470,5 +1453,9 @@
             component.set("v.callerId",selectedLead.MobilePhone);
         }   
         component.set("v.isLeadFlag",true);
+    },
+
+    setupNextCallDidValue : function(component, did){
+        component.set("v.did", did);
     }
 })

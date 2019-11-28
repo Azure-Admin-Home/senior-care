@@ -47,6 +47,7 @@
     <aura:attribute name="inboundLeadResponse" type="Object"/>
 	<aura:attribute name="prevStatus" type="String" default="Offline - Manual Dialing"/>
 	<aura:attribute name="playSound" type="Boolean" default="false"/>
+	<aura:attribute name="did" type="String" default=""/>
     
     <lightning:utilityBarAPI aura:id="utilitybar" />
     <lightning:omniToolkitAPI aura:id="omniToolkit" />
