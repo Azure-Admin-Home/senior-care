@@ -13,11 +13,10 @@ private class LeadSoftphoneTransferCall_ctl_Test {
         
         String authKey = 'aaaaaaa0-bbb1-ccc2-ddd3-eeeeeeeeeee4';
         String specifiedNumber = '00000000';
-        String phoneNumber = '11111111';
 
         Test.setMock(HttpCalloutMock.class, new qsuiteUtilities_Mock());
         Test.startTest();
-            LeadSoftphoneTransferCall_ctl.transferCallApi(authKey, specifiedNumber, phoneNumber);
+            LeadSoftphoneTransferCall_ctl.transferCallApi(authKey, specifiedNumber);
         Test.stopTest();
     }
 }

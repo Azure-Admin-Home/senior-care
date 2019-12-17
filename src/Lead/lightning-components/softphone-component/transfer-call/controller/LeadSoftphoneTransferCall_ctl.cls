@@ -6,11 +6,12 @@ public with sharing class LeadSoftphoneTransferCall_ctl {
     }
 
     @AuraEnabled
-    public static Boolean transferCallApi(String authKey,String specifiedNumber,String phoneNumber){
+    public static Boolean transferCallApi(String authKey,String specifiedNumber){
         User agent = [SELECT Id,Name,Auth_Key__c,Phone,Server_URL__c FROM User where Id =: UserInfo.getUserId()];
         authKey = String.isNotBlank(authKey)?authKey:agent.Auth_Key__c;
         String serverURL = agent.Server_URL__c;
+        String agentNumber = agent.Phone;
         
-        return qsuiteUtilities.transferCallAPI(authKey,specifiedNumber,phoneNumber,serverURL);
+        return qsuiteUtilities.transferCallAPI(authKey,specifiedNumber,agentNumber,serverURL);
     }
 }

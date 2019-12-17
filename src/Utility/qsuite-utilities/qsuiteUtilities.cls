@@ -102,7 +102,8 @@ public class qsuiteUtilities {
     {
         Integer userCampaign =(Integer)[Select Id,Campaign_Id__c FROM User Where Id =: userInfo.getUserId()].Campaign_Id__c;
         HttpRequest request = new HttpRequest();
-        request.setEndpoint(serverURL+Label.CreatedLead_API+authKey+'&phone_number='+phoneNumber+'&list='+userCampaign);
+        String digitalPhoneNumber = formatPhoneNumberForSending(phoneNumber);
+        request.setEndpoint(serverURL+Label.CreatedLead_API+authKey+'&phone_number='+digitalPhoneNumber+'&list='+userCampaign);
         request.setTimeout(12000);
         request.setMethod('GET');
         
@@ -120,6 +121,9 @@ public class qsuiteUtilities {
             }
         }
         return callId.trim();
+    }
+    private static String formatPhoneNumberForSending(String phoneNumber){
+        return phoneNumber.replaceAll('[\\+\\-\\(\\)\\ ]', '');
     }
     //Method for load a call API
     public Static Boolean loadCallAPI(String callListId,String authKey,String serverURL)
@@ -374,7 +378,9 @@ public class qsuiteUtilities {
     public static Boolean transferCallAPI(String auth_Key,String specifiedNumber,String phoneNumber,String serverURL){
         Boolean returnFlag = false;
         HttpRequest request = new HttpRequest();
-        request.setEndpoint(serverURL+Label.Transfer_call_API+auth_Key+'&type=3&specified_number='+specifiedNumber+'&specified_trunk=1&caller_id='+phoneNumber+'&id=6');
+        String formattedSpecifiedNumber = formatPhoneNumberForSending(specifiedNumber);
+        String formattedPhoneNumber = formatPhoneNumberForSending(phoneNumber);
+        request.setEndpoint(serverURL+Label.Transfer_call_API+auth_Key+'&type=3&specified_number='+formattedSpecifiedNumber+'&specified_trunk=1&caller_id='+formattedPhoneNumber+'&id=6');
         request.setTimeout(12000);
         request.setMethod('GET');
         
