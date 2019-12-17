@@ -16,6 +16,29 @@
                 })
         );
     },
+    findStatusIdToSetAgentTo : function(statusName, component){
+        const statusString = $A.get("$Label.c.Status_Json");
+        const statusList = JSON.parse(statusString);
+        statusList.some( status => {
+            const isSuitableStatus = (status.MasterLabel === statusName);
+            if(isSuitableStatus){
+                const statusId = status.Id;
+                const omniAPI = component.find("omniToolkit");
+                this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
+            }
+            return isSuitableStatus;
+        });
+    },
+    setAgentStatusAndIcon : function(omniAPI, component, statusId, statusName){
+        omniAPI
+            .setServicePresenceStatus({"statusId": statusId})
+            .then(result => {
+                    this.addClassToStatusIcon(component,statusName);
+            })
+            .catch(error => {
+            console.log(error);
+            });
+    },
     callerMethod : function(component,event,jsonString,leadId){       
         const action = component.get("c.handleServerCall");
         action.setParams({ reqJSON : jsonString}); 
@@ -224,6 +247,7 @@
         const action = component.get("c.nextCallApi");
         action.setParams({auth_key : authKey});
         const responseHandler = this.produceResponseHandlePromise(action);
+        const self = this;
         const successHandler = (responseBody) => {
                 if(responseBody.isSucess) {
                     const did = responseBody.did;
@@ -240,7 +264,7 @@
                                 component.set("v.callFinished",false);
                                 component.set("v.dispositionValue","");
                                 const statusName = "Online";
-                                this.findStatusIdToSetAgentTo(statusName, component);
+                                self.findStatusIdToSetAgentTo(statusName, component);
                                 // const statusList = JSON.parse(statusString);
                                 // statusList.forEach(function(status){
                                     
@@ -455,29 +479,6 @@
     {
         component.set("v.error",true);
         component.set("v.ErrorMsg",msg);
-    },
-    findStatusIdToSetAgentTo : function(statusName, component){
-        const statusString = $A.get("$Label.c.Status_Json");
-        const statusList = JSON.parse(statusString);
-        statusList.some( status => {
-            const isSuitableStatus = (status.MasterLabel === statusName);
-            if(isSuitableStatus){
-                const statusId = status.Id;
-                const omniAPI = component.find("omniToolkit");
-                this.setAgentStatusAndIcon(omniAPI, component, statusId, statusName);
-            }
-            return isSuitableStatus;
-        });
-    },
-    setAgentStatusAndIcon : function(omniAPI, component, statusId, statusName){
-        omniAPI
-            .setServicePresenceStatus({"statusId": statusId})
-            .then(result => {
-                    this.addClassToStatusIcon(component,statusName);
-            })
-            .catch(error => {
-            console.log(error);
-            });
     },
     addClassToStatusIcon : function(component,selectedClass)
     {
@@ -770,6 +771,7 @@
         // var incomingOnlyFlag = component.get('v.incomingOnlyFlag');
         // var leadId = lead.Id;
         var action = component.get("c.nextCallApi");
+        const self = this;
         action.setParams({auth_key : authKey});
         action.setCallback(this, function(response) {
             var state = response.getState();
@@ -789,7 +791,7 @@
                                 component.set("v.callFinished",false);
                                 component.set("v.dispositionValue","");
                                 const statusName = 'Online';
-                                this.findStatusIdToSetAgentTo(statusName, component);
+                                self.findStatusIdToSetAgentTo(statusName, component);
                                 // var statusList = JSON.parse(statusString);
                                 // statusList.forEach(function(status){
                                 //     if(status.MasterLabel === statusName){
