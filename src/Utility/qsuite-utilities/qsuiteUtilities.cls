@@ -378,7 +378,9 @@ public class qsuiteUtilities {
     public static Boolean transferCallAPI(String auth_Key,String specifiedNumber,String phoneNumber,String serverURL){
         Boolean returnFlag = false;
         HttpRequest request = new HttpRequest();
-        request.setEndpoint(serverURL+Label.Transfer_call_API+auth_Key+'&type=3&specified_number='+specifiedNumber+'&specified_trunk=1&caller_id='+phoneNumber+'&id=6');
+        String formattedSpecifiedNumber = formatPhoneNumberForSending(specifiedNumber);
+        String formattedPhoneNumber = formatPhoneNumberForSending(phoneNumber);
+        request.setEndpoint(serverURL+Label.Transfer_call_API+auth_Key+'&type=3&specified_number='+formattedSpecifiedNumber+'&specified_trunk=1&caller_id='+formattedPhoneNumber+'&id=6');
         request.setTimeout(12000);
         request.setMethod('GET');
         

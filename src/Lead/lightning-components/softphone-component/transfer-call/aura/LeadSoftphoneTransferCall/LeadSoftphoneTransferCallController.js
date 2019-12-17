@@ -40,11 +40,10 @@
         const specifiedNumber = helper.formatAgentNumber(agentNumber);
         const callerId = component.get("v.callerId");
         const lead = component.get("v.lead");
-        const phoneNumber = helper.selectLeadNumber(callerId, lead);
+        // const phoneNumber = helper.selectLeadNumber(callerId, lead);
         const action = component.get("c.transferCallApi");
         action.setParams({"authKey" : authKey,
-                          "specifiedNumber" : specifiedNumber,
-                          "phoneNumber" : phoneNumber});
+                          "specifiedNumber" : specifiedNumber});
         
         const responseHandler = helper.produceResponseHandlePromise(action);
         const errorHandler = helper.onErrorResponse;
