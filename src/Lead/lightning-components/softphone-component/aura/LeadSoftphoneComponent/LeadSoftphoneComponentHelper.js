@@ -146,6 +146,7 @@
                 if(response.getReturnValue())
                 {
                     console.log('Calling is sucessful.');
+                    this.callConnected(component);
                 }else{
                     console.log('Calling is failed.');
                 }
