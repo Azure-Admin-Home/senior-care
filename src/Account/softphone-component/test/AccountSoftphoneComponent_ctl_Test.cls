@@ -61,19 +61,19 @@ public class AccountSoftphoneComponent_ctl_Test {
         Test.stopTest(); 
     }
 
-    @IsTest
-    static void personAccount_withBlankPhoneFields_Test(){
+    // @IsTest
+    // static void personAccount_withBlankPhoneFields_Test(){
         
-        Id personAcc = [SELECT Id FROM RecordType WHERE (Name='Person Account') AND (SobjectType='Account')].Id;
-        Account blankAccount = new Account(LastName='TestAccount', RecordTypeId = personAcc);
-        insert blankAccount;
+    //     Id personAcc = [SELECT Id FROM RecordType WHERE (Name='Person Account') AND (SobjectType='Account')].Id;
+    //     Account blankAccount = new Account(LastName='TestAccount', RecordTypeId = personAcc);
+    //     insert blankAccount;
 
-        Test.setMock(HttpCalloutMock.class, new qsuiteUtilities_Mock());
-        Test.startTest();
-        Id blankAccountId = blankAccount.Id;
-        Account tempAccount = AccountSoftphoneComponent_ctl.getAccount(blankAccountId,'33227ea9-d9d0-11e9-abcc-0a52c0223f8c');
-        Test.stopTest();
-    }
+    //     Test.setMock(HttpCalloutMock.class, new qsuiteUtilities_Mock());
+    //     Test.startTest();
+    //     Id blankAccountId = blankAccount.Id;
+    //     Account tempAccount = AccountSoftphoneComponent_ctl.getAccount(blankAccountId,'33227ea9-d9d0-11e9-abcc-0a52c0223f8c');
+    //     Test.stopTest();
+    // }
 
     @IsTest
     static void personAccount_withMobileField_Test(){
